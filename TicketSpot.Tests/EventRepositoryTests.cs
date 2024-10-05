@@ -4,76 +4,83 @@ using DataAccessLayer.Repository.Implementations;
 using DataAccessLayer.Repository.Interfaces;
 using FluentAssertions;
 
-namespace TicketSpot.Tests
+namespace TicketSpot.RepositoryIntgrationTests;
+
+[TestClass]
+public class EventRepositoryTests
 {
-    [TestClass]
-    public class EventRepositoryTests
+    private readonly IEventRepository _eventRepository = new EventRepository(new TicketSpotDbContext());
+
+    private int cleanupId;
+
+    [TestCleanup]
+    public async Task CleanUp()
     {
-        private readonly IEventRepository _eventRepository = new EventRepository(new TicketSpotDbContext());
+        await _eventRepository.DeleteAsync(cleanupId);
+    }
 
-        [TestMethod]
-        public async Task Event_Create()
+    [TestMethod]
+    public async Task Event_Create_GetById()
+    {
+        var eventToCreate = new Event
         {
-            var eventToCreate = new Event
-            {
-                Name = "U2 Concert",
-                Date = DateTime.Parse("2024.12.25 19:00"),
-                Description = "Jushua Tree album aniversary",
-                EventManagerId = 1
-            };
+            Name = "U2 Concert",
+            Date = DateTime.Parse("2024.12.25 19:00"),
+            Description = "Jushua Tree album aniversary",
+            EventManagerId = 1
+        };
 
-            await _eventRepository.CreateAsync(eventToCreate);
+        await _eventRepository.CreateAsync(eventToCreate);
 
-            var resultGetAll = await _eventRepository.GetAllAsync();
+        var resultGetAll = await _eventRepository.GetAllAsync();
 
-            resultGetAll.Should().HaveCount(1);
+        resultGetAll.Should().HaveCount(1);
 
-            var createdId = resultGetAll.First().Id;
+        var createdId = resultGetAll.First().Id;
 
-            var resultGetById = await _eventRepository.Get(c => c.Id == createdId);
+        cleanupId = createdId;
 
-            resultGetById.Should().NotBeNull();
-            resultGetById.Should().BeEquivalentTo(eventToCreate);
+        var resultGetById = await _eventRepository.Get(c => c.Id == createdId);
 
-            await _eventRepository.DeleteAsync(resultGetById.Id);
-        }
+        resultGetById.Should().NotBeNull();
+        resultGetById.Should().BeEquivalentTo(eventToCreate);
+    }
 
-        [TestMethod]
-        public async Task Event_Update()
+    [TestMethod]
+    public async Task Event_Update()
+    {
+        var eventToCreate = new Event
         {
-            var eventToCreate = new Event
-            {
-                Name = "U2 Concert",
-                Date = DateTime.Parse("2024.12.25 19:00"),
-                Description = "Jushua Tree album aniversary",
-                EventManagerId = 1
-            };
+            Name = "U2 Concert",
+            Date = DateTime.Parse("2024.12.25 19:00"),
+            Description = "Jushua Tree album aniversary",
+            EventManagerId = 1
+        };
 
-            await _eventRepository.CreateAsync(eventToCreate);
+        await _eventRepository.CreateAsync(eventToCreate);
 
-            var resultGetAll = await _eventRepository.GetAllAsync();
+        var resultGetAll = await _eventRepository.GetAllAsync();
 
-            resultGetAll.Should().HaveCount(1);
+        resultGetAll.Should().HaveCount(1);
 
-            var createdId = resultGetAll.First().Id;
+        var createdId = resultGetAll.First().Id;
 
-            var eventToUpdate = new Event
-            {
-                Id = createdId,
-                Name = "U2 Concert",
-                Date = DateTime.Parse("2024.12.25 20:00"),
-                Description = "Jushua Tree album aniversary",
-                EventManagerId = 1
-            };
+        cleanupId = createdId;
 
-            var updateResult = await _eventRepository.UpdateAsync(eventToUpdate);
+        var eventToUpdate = new Event
+        {
+            Id = createdId,
+            Name = "U2 Concert",
+            Date = DateTime.Parse("2024.12.25 20:00"),
+            Description = "Jushua Tree album aniversary",
+            EventManagerId = 1
+        };
 
-            var resultGetById = await _eventRepository.Get(c => c.Id == createdId);
+        var updateResult = await _eventRepository.UpdateAsync(eventToUpdate);
 
-            resultGetById.Should().NotBeNull();
-            resultGetById.Should().BeEquivalentTo(eventToUpdate);
+        var resultGetById = await _eventRepository.Get(c => c.Id == createdId);
 
-            await _eventRepository.DeleteAsync(resultGetById.Id);
-        }
+        resultGetById.Should().NotBeNull();
+        resultGetById.Should().BeEquivalentTo(eventToUpdate);
     }
 }

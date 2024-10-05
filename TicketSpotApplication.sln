@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLayer", "DataAcce
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{95A7FA5C-6062-4284-84C8-6BEB76C65FCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSpot.Tests", "TicketSpot.Tests\TicketSpot.Tests.csproj", "{C6F82DBC-28C1-487D-83C9-7CD3BC883867}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSpot.RepositoryIntgrationTests", "TicketSpot.Tests\TicketSpot.RepositoryIntgrationTests.csproj", "{C6F82DBC-28C1-487D-83C9-7CD3BC883867}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

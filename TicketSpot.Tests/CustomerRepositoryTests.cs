@@ -3,74 +3,81 @@ using DataAccessLayer.Repository.Implementations;
 using DataAccessLayer.Repository.Interfaces;
 using FluentAssertions;
 
-namespace TicketSpot.Tests
+namespace TicketSpot.RepositoryIntgrationTests;
+
+[TestClass]
+public class CustomerRepositoryTests
 {
-    [TestClass]
-    public class CustomerRepositoryTests
+    private readonly ICustomerRepository _customerRepository
+        = new CustomerRepository(new DataAccessLayer.TicketSpotDbContext());
+
+    private int cleanupId;
+
+    [TestCleanup]
+    public async Task CleanUp()
     {
-        private readonly ICustomerRepository _customerRepository
-            = new CustomerRepository(new DataAccessLayer.TicketSpotDbContext());
+        await _customerRepository.DeleteAsync(cleanupId);
+    }
 
-        [TestMethod]
-        public async Task Customer_Create()
+    [TestMethod]
+    public async Task Customer_Create_GetById()
+    {
+        var customerToCreate = new Customer
         {
-            var customerToCreate = new Customer
-            {
-                FirstName = "Paul",
-                LastName = "Artreides",
-                Email = "p.artreides@dune.ar"
-            };
+            FirstName = "Paul",
+            LastName = "Artreides",
+            Email = "p.artreides@dune.ar"
+        };
 
-            await _customerRepository.CreateAsync(customerToCreate);
+        await _customerRepository.CreateAsync(customerToCreate);
 
-            var resultGetAll = await _customerRepository.GetAllAsync();
+        var resultGetAll = await _customerRepository.GetAllAsync();
 
-            resultGetAll.Should().HaveCount(1);
+        resultGetAll.Should().HaveCount(1);
 
-            var createdId = resultGetAll.First().Id;
+        var createdId = resultGetAll.First().Id;
 
-            var resultGetById = await _customerRepository.Get(c => c.Id == createdId);
+        cleanupId = createdId;
 
-            resultGetById.Should().NotBeNull();
-            resultGetById.Should().BeEquivalentTo(customerToCreate);
+        var resultGetById = await _customerRepository.Get(c => c.Id == createdId);
 
-            await _customerRepository.DeleteAsync(resultGetById.Id);
-        }
+        resultGetById.Should().NotBeNull();
+        resultGetById.Should().BeEquivalentTo(customerToCreate);
+    }
 
-        [TestMethod]
-        public async Task Customer_Update()
+    [TestMethod]
+    public async Task Customer_Update()
+    {
+        var customerToCreate = new Customer
         {
-            var customerToCreate = new Customer
-            {
-                FirstName = "Paul",
-                LastName = "Artreides",
-                Email = "p.artreides@dune.ar"
-            };
+            FirstName = "Paul",
+            LastName = "Artreides",
+            Email = "p.artreides@dune.ar"
+        };
 
-            await _customerRepository.CreateAsync(customerToCreate);
+        await _customerRepository.CreateAsync(customerToCreate);
 
-            var resultGetAll = await _customerRepository.GetAllAsync();
+        var resultGetAll = await _customerRepository.GetAllAsync();
 
-            resultGetAll.Should().HaveCount(1);
+        resultGetAll.Should().HaveCount(1);
 
-            var createdId = resultGetAll.First().Id;
+        var createdId = resultGetAll.First().Id;
 
-            var customerToUpdate = new Customer
-            {
-                Id = createdId,
-                FirstName = "Paul",
-                LastName = "Artreides",
-                Email = "p.artreides@dune.ar"
-            };
+        cleanupId = createdId;
 
-            var updateResult = await _customerRepository.UpdateAsync(customerToUpdate);
+        var customerToUpdate = new Customer
+        {
+            Id = createdId,
+            FirstName = "Paul",
+            LastName = "Artreides",
+            Email = "p.artreides@dune.ar"
+        };
 
-            var resultGetById = await _customerRepository.Get(c => c.Id == createdId);
+        var updateResult = await _customerRepository.UpdateAsync(customerToUpdate);
 
-            resultGetById.Should().NotBeNull();
-            resultGetById.Should().BeEquivalentTo(customerToUpdate);
+        var resultGetById = await _customerRepository.Get(c => c.Id == createdId);
 
-            await _customerRepository.DeleteAsync(resultGetById.Id);
-        }
+        resultGetById.Should().NotBeNull();
+        resultGetById.Should().BeEquivalentTo(customerToUpdate);
     }
 }
