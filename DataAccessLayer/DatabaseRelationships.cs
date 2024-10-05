@@ -15,7 +15,8 @@ namespace DataAccessLayer
             modelBuilder.Entity<Venue>()
                 .HasMany(v => v.Events)
                 .WithOne(e => e.Venue)
-                .HasForeignKey(v => v.EventManagerId);
+                .HasForeignKey(v => v.EventManagerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Venue>()
                 .HasOne(v => v.EventManager)
@@ -55,7 +56,21 @@ namespace DataAccessLayer
             modelBuilder.Entity<Ticket>()
                 .HasOne(t => t.Customer)
                 .WithMany(c => c.Tickets)
-                .HasForeignKey(t => t.CustomerId);
+                .HasForeignKey(t => t.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Ticket>()
+                .HasOne(t => t.Event)
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(t => t.EventId)
+                .HasForeignKey(t => t.EventId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Ticket>()
+                .HasOne(t => t.Seat)
+                .WithMany(s => s.Tickets)
+                .HasForeignKey(t => t.SeatId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             return modelBuilder;
         }
