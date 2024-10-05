@@ -1,6 +1,5 @@
-﻿namespace DataAccessLayer.Exceptions
+﻿namespace DataAccessLayer.Exceptions;
+
+public class RecordNotFoundException(string? message) : Exception(message)
 {
-    public class RecordNotFoundException(string? message) : Exception(message)
-    {
-    }
 }
