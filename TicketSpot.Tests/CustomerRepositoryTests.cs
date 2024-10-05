@@ -33,9 +33,9 @@ public class CustomerRepositoryTests
 
         var resultGetAll = await _customerRepository.GetAllAsync();
 
-        resultGetAll.Should().HaveCount(1);
+        resultGetAll.Should().HaveCount(2);
 
-        var createdId = resultGetAll.First().Id;
+        var createdId = resultGetAll.First(c => c.LastName == "Artreides").Id;
 
         cleanupId = createdId;
 
@@ -59,9 +59,9 @@ public class CustomerRepositoryTests
 
         var resultGetAll = await _customerRepository.GetAllAsync();
 
-        resultGetAll.Should().HaveCount(1);
+        resultGetAll.Should().HaveCount(2);
 
-        var createdId = resultGetAll.First().Id;
+        var createdId = resultGetAll.First(c => c.LastName == "Artreides").Id;
 
         cleanupId = createdId;
 

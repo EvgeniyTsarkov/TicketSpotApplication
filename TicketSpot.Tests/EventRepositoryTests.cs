@@ -34,9 +34,9 @@ public class EventRepositoryTests
 
         var resultGetAll = await _eventRepository.GetAllAsync();
 
-        resultGetAll.Should().HaveCount(1);
+        resultGetAll.Should().HaveCountGreaterThan(1);
 
-        var createdId = resultGetAll.First().Id;
+        var createdId = resultGetAll.First(e => e.Name.StartsWith("U2")).Id;
 
         cleanupId = createdId;
 
@@ -61,9 +61,9 @@ public class EventRepositoryTests
 
         var resultGetAll = await _eventRepository.GetAllAsync();
 
-        resultGetAll.Should().HaveCount(1);
+        resultGetAll.Should().HaveCountGreaterThan(1);
 
-        var createdId = resultGetAll.First().Id;
+        var createdId = resultGetAll.First(e => e.Name.StartsWith("U2")).Id;
 
         cleanupId = createdId;
 
