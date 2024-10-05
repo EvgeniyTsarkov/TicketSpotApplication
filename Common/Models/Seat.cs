@@ -9,6 +9,6 @@
         public int VenueId { get; set; }
 
         public Venue Venue { get; set; }
-        public ICollection<Ticket> Tickets { get; set; }
+        public ICollection<Ticket> Tickets { get; set; } = [];
     }
 }

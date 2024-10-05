@@ -9,7 +9,7 @@
         public int EventManagerId { get; set; }
 
         public EventManager EventManager { get; set; }
-        public ICollection<Seat> Seats { get; set; }
-        public ICollection<Event> Events { get; set; }
+        public ICollection<Seat> Seats { get; set; } = [];
+        public ICollection<Event> Events { get; set; } = [];
     }
 }

@@ -7,6 +7,6 @@
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public ICollection<Ticket> Tickets { get; set; }
+        public ICollection<Ticket> Tickets { get; set; } = [];
     }
 }
