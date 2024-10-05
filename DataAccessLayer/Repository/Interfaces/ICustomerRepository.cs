@@ -1,6 +1,11 @@
-﻿namespace DataAccessLayer.Repository.Interfaces
+﻿using Common.Models;
+
+namespace DataAccessLayer.Repository.Interfaces
 {
-    internal interface ICustomerRepository
+    public interface ICustomerRepository : IBaseRepository<Customer>
     {
+        Task<Customer> CreateAsync(Customer customer);
+        Task<Customer> UpdateAsync(Customer customer);
+        Task DeleteAsync(int id);
     }
 }

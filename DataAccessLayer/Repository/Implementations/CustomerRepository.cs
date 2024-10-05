@@ -1,7 +1,6 @@
 ﻿using Common.Models;
 using DataAccessLayer.Exceptions;
 using DataAccessLayer.Repository.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repository.Implementations
 {
@@ -17,6 +16,11 @@ namespace DataAccessLayer.Repository.Implementations
 
         public async Task<Customer> UpdateAsync(Customer customer)
         {
+            var itemToUpdate = await Get(x => x.Id == customer.Id)
+                ?? throw new RecordNotFoundException("The customer to be updated is not found in the database");
+
+            _context.ChangeTracker.Clear();
+
             _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
             return customer;
@@ -24,12 +28,10 @@ namespace DataAccessLayer.Repository.Implementations
 
         public async Task DeleteAsync(int id)
         {
-            var itemToDelete = await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            var itemToDelete = await Get(x => x.Id == id)
+                ?? throw new RecordNotFoundException(string.Format("Customer with id: {0} is not found in the database", id));
 
-            if (itemToDelete == null)
-            {
-                throw new RecordNotFoundException(string.Format("Customer with id: {0} is not found in the database", id));
-            }
+            _context.ChangeTracker.Clear();
 
             _context.Customers.Remove(itemToDelete);
             await _context.SaveChangesAsync();
