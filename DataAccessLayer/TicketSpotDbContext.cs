@@ -11,6 +11,8 @@ public class TicketSpotDbContext : DbContext
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<EventManager> EventManagers { get; set; }
+    public DbSet<Section> Sections { get; set; }
+    public DbSet<Row> Rows { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -27,6 +29,8 @@ public class TicketSpotDbContext : DbContext
             .AddEventRelationships()
             .AddSeatRelationships()
             .AddTicketRelationships()
-            .AddCustomerRelationships();
+            .AddCustomerRelationships()
+            .AddRowsRelationships()
+            .AddSectionRelationships();
     }
 }

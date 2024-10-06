@@ -19,8 +19,6 @@ public class CustomerRepository(TicketSpotDbContext ticketSpotContext)
         var itemToUpdate = await Get(x => x.Id == customer.Id)
             ?? throw new RecordNotFoundException("The customer to be updated is not found in the database");
 
-        _context.ChangeTracker.Clear();
-
         _context.Customers.Update(customer);
         await _context.SaveChangesAsync();
         return customer;
@@ -30,8 +28,6 @@ public class CustomerRepository(TicketSpotDbContext ticketSpotContext)
     {
         var itemToDelete = await Get(x => x.Id == id)
             ?? throw new RecordNotFoundException(string.Format("Customer with id: {0} is not found in the database", id));
-
-        _context.ChangeTracker.Clear();
 
         _context.Customers.Remove(itemToDelete);
         await _context.SaveChangesAsync();

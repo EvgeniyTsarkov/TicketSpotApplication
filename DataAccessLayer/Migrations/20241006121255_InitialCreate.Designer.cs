@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(TicketSpotDbContext))]
-    [Migration("20241005164425_InitialCreate")]
+    [Migration("20241006121255_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -71,9 +71,14 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("VenueId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EventManagerId");
+
+                    b.HasIndex("VenueId");
 
                     b.ToTable("Events");
                 });
@@ -103,7 +108,39 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("EventManagers");
                 });
 
+            modelBuilder.Entity("Common.Models.Row", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RowNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Rows");
+                });
+
             modelBuilder.Entity("Common.Models.Seat", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RowId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeatNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Seats");
+                });
+
+            modelBuilder.Entity("Common.Models.Section", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -111,13 +148,7 @@ namespace DataAccessLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("RowNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SeatNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Section")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -128,7 +159,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("VenueId");
 
-                    b.ToTable("Seats");
+                    b.ToTable("Sections");
                 });
 
             modelBuilder.Entity("Common.Models.Ticket", b =>
@@ -183,6 +214,15 @@ namespace DataAccessLayer.Migrations
                     b.Property<int>("EventManagerId")
                         .HasColumnType("int");
 
+                    b.Property<int>("MaxRowsPerSection")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxSeatsPerRow")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxSections")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -199,13 +239,13 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("Common.Models.EventManager", "EventManager")
                         .WithMany("Events")
                         .HasForeignKey("EventManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Common.Models.Venue", "Venue")
                         .WithMany("Events")
-                        .HasForeignKey("EventManagerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("VenueId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("EventManager");
@@ -213,10 +253,32 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Venue");
                 });
 
+            modelBuilder.Entity("Common.Models.Row", b =>
+                {
+                    b.HasOne("Common.Models.Section", "Section")
+                        .WithMany("Rows")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Section");
+                });
+
             modelBuilder.Entity("Common.Models.Seat", b =>
                 {
-                    b.HasOne("Common.Models.Venue", "Venue")
+                    b.HasOne("Common.Models.Row", "Row")
                         .WithMany("Seats")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Row");
+                });
+
+            modelBuilder.Entity("Common.Models.Section", b =>
+                {
+                    b.HasOne("Common.Models.Venue", "Venue")
+                        .WithMany("Sections")
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -279,16 +341,26 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Venues");
                 });
 
+            modelBuilder.Entity("Common.Models.Row", b =>
+                {
+                    b.Navigation("Seats");
+                });
+
             modelBuilder.Entity("Common.Models.Seat", b =>
                 {
                     b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("Common.Models.Section", b =>
+                {
+                    b.Navigation("Rows");
                 });
 
             modelBuilder.Entity("Common.Models.Venue", b =>
                 {
                     b.Navigation("Events");
 
-                    b.Navigation("Seats");
+                    b.Navigation("Sections");
                 });
 #pragma warning restore 612, 618
         }

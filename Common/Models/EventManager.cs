@@ -7,6 +7,6 @@ public class EventManager
     public string LastName { get; set; }
     public string Email { get; set; }
 
-    public ICollection<Event> Events { get; set; }
-    public ICollection<Venue> Venues { get; set; }
+    public ICollection<Event> Events { get; set; } = [];
+    public ICollection<Venue> Venues { get; set; } = [];
 }

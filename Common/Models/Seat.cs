@@ -3,11 +3,9 @@
 public class Seat
 {
     public int Id { get; set; }
-    public string Section { get; set; }
-    public int RowNumber { get; set; }
     public int SeatNumber { get; set; }
-    public int VenueId { get; set; }
+    public int RowId { get; set; }
 
-    public Venue Venue { get; set; }
+    public Row Row { get; set; }
     public ICollection<Ticket> Tickets { get; set; } = [];
 }

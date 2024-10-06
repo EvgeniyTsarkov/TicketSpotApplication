@@ -50,7 +50,10 @@ namespace DataAccessLayer.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EventManagerId = table.Column<int>(type: "int", nullable: false)
+                    EventManagerId = table.Column<int>(type: "int", nullable: false),
+                    MaxSections = table.Column<int>(type: "int", nullable: false),
+                    MaxRowsPerSection = table.Column<int>(type: "int", nullable: false),
+                    MaxSeatsPerRow = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,7 +75,8 @@ namespace DataAccessLayer.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EventManagerId = table.Column<int>(type: "int", nullable: false)
+                    EventManagerId = table.Column<int>(type: "int", nullable: false),
+                    VenueId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -81,34 +85,68 @@ namespace DataAccessLayer.Migrations
                         name: "FK_Events_EventManagers_EventManagerId",
                         column: x => x.EventManagerId,
                         principalTable: "EventManagers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Events_Venues_EventManagerId",
-                        column: x => x.EventManagerId,
+                        name: "FK_Events_Venues_VenueId",
+                        column: x => x.VenueId,
+                        principalTable: "Venues",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VenueId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sections_Venues_VenueId",
+                        column: x => x.VenueId,
                         principalTable: "Venues",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rows",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    RowNumber = table.Column<int>(type: "int", nullable: false),
+                    SectionId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rows", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rows_Sections_Id",
+                        column: x => x.Id,
+                        principalTable: "Sections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Seats",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Section = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RowNumber = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     SeatNumber = table.Column<int>(type: "int", nullable: false),
-                    VenueId = table.Column<int>(type: "int", nullable: false)
+                    RowId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Seats", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Seats_Venues_VenueId",
-                        column: x => x.VenueId,
-                        principalTable: "Venues",
+                        name: "FK_Seats_Rows_Id",
+                        column: x => x.Id,
+                        principalTable: "Rows",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -154,8 +192,13 @@ namespace DataAccessLayer.Migrations
                 column: "EventManagerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Seats_VenueId",
-                table: "Seats",
+                name: "IX_Events_VenueId",
+                table: "Events",
+                column: "VenueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sections_VenueId",
+                table: "Sections",
                 column: "VenueId");
 
             migrationBuilder.CreateIndex(
@@ -193,6 +236,12 @@ namespace DataAccessLayer.Migrations
 
             migrationBuilder.DropTable(
                 name: "Seats");
+
+            migrationBuilder.DropTable(
+                name: "Rows");
+
+            migrationBuilder.DropTable(
+                name: "Sections");
 
             migrationBuilder.DropTable(
                 name: "Venues");

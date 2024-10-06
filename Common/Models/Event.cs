@@ -7,6 +7,7 @@ public class Event
     public DateTime Date { get; set; }
     public string? Description { get; set; }
     public int EventManagerId { get; set; }
+    public int VenueId { get; set; }
 
     public Venue Venue { get; set; }
     public EventManager EventManager { get; set; }

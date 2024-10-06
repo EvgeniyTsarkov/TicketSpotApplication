@@ -8,7 +8,7 @@ public static class DatabaseRelationships
     public static ModelBuilder AddVenueRelationships(this ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Venue>()
-            .HasMany(v => v.Seats)
+            .HasMany(v => v.Sections)
             .WithOne(s => s.Venue)
             .HasForeignKey(s => s.VenueId);
 
@@ -16,7 +16,7 @@ public static class DatabaseRelationships
             .HasMany(v => v.Events)
             .WithOne(e => e.Venue)
             .HasForeignKey(v => v.EventManagerId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Venue>()
             .HasOne(v => v.EventManager)
@@ -36,7 +36,14 @@ public static class DatabaseRelationships
         modelBuilder.Entity<Event>()
             .HasOne(e => e.EventManager)
             .WithMany(em => em.Events)
-            .HasForeignKey(e => e.EventManagerId);
+            .HasForeignKey(e => e.EventManagerId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Event>()
+            .HasOne(e => e.Venue)
+            .WithMany(v => v.Events)
+            .HasForeignKey(e => e.VenueId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         return modelBuilder;
     }
@@ -81,6 +88,26 @@ public static class DatabaseRelationships
             .HasMany(c => c.Tickets)
             .WithOne(t => t.Customer)
             .HasForeignKey(t => t.CustomerId);
+
+        return modelBuilder;
+    }
+
+    public static ModelBuilder AddRowsRelationships(this ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Row>()
+            .HasMany(r => r.Seats)
+            .WithOne(s => s.Row)
+            .HasForeignKey(s => s.Id);
+
+        return modelBuilder;
+    }
+
+    public static ModelBuilder AddSectionRelationships(this ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Section>()
+            .HasMany(s => s.Rows)
+            .WithOne(r => r.Section)
+            .HasForeignKey(r => r.Id);
 
         return modelBuilder;
     }

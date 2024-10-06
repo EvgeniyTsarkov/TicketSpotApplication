@@ -19,8 +19,6 @@ public class EventManagerRepository(TicketSpotDbContext ticketSpotContext)
         var itemToUpdate = await Get(x => x.Id == updatedEventManager.Id)
             ?? throw new RecordNotFoundException("The event manager to be updated is not found in the database");
 
-        _context.ChangeTracker.Clear();
-
         _context.EventManagers.Update(updatedEventManager);
         await _context.SaveChangesAsync();
         return updatedEventManager;
@@ -30,8 +28,6 @@ public class EventManagerRepository(TicketSpotDbContext ticketSpotContext)
     {
         var itemToDelete = await Get(x => x.Id == id)
             ?? throw new RecordNotFoundException(string.Format("Event manager with id: {0} is not found in the database", id));
-
-        _context.ChangeTracker.Clear();
 
         _context.EventManagers.Remove(itemToDelete);
         await _context.SaveChangesAsync();
