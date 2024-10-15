@@ -5,18 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repository.Implementations;
 
-public class VenueRepository(TicketSpotDbContext ticketSpotContext)
-    : BaseRepository<Venue>(ticketSpotContext), IVenueRepository
+public class VenueRepository(TicketSpotDbContext context) : IRepository<Venue>
 {
-    public new async Task<List<Venue>> GetAllAsync() =>
-        await _context.Venues
+    public async Task<List<Venue>> GetAllAsync() =>
+        await context.Venues
         .AsNoTracking()
         .AsQueryable()
         .Include(e => e.EventManagerId)
         .ToListAsync();
 
     public async Task<Venue> GetAsync(int id) =>
-        await _context.Venues
+        await context.Venues
         .AsNoTracking()
         .AsQueryable()
         .Where(e => e.Id == id)
@@ -25,27 +24,27 @@ public class VenueRepository(TicketSpotDbContext ticketSpotContext)
 
     public async Task<Venue> CreateAsync(Venue venue)
     {
-        await _context.Venues.AddAsync(venue);
-        await _context.SaveChangesAsync();
+        await context.Venues.AddAsync(venue);
+        await context.SaveChangesAsync();
         return venue;
     }
 
     public async Task<Venue> UpdateAsync(Venue venue)
     {
-        var itemToUpdate = await Get(x => x.Id == venue.Id)
+        var itemToUpdate = await GetAsync(venue.Id)
             ?? throw new RecordNotFoundException("The venue to be updated is not found in the database");
 
-        _context.Venues.Update(venue);
-        await _context.SaveChangesAsync();
+        context.Venues.Update(venue);
+        await context.SaveChangesAsync();
         return venue;
     }
 
     public async Task DeleteAsync(int id)
     {
-        var itemToDelete = await Get(x => x.Id == id)
-            ?? throw new RecordNotFoundException(string.Format("Venue with id: {0} is not found in the database", id));
+        var itemToDelete = new Venue { Id = id };
 
-        _context.Venues.Remove(itemToDelete);
-        await _context.SaveChangesAsync();
+        context.Attach(itemToDelete);
+        context.Venues.Remove(itemToDelete);
+        await context.SaveChangesAsync();
     }
 }

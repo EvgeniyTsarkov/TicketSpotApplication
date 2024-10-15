@@ -5,11 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repository.Implementations;
 
-public class EventRepository(TicketSpotDbContext ticketSpotContext)
-    : BaseRepository<Event>(ticketSpotContext), IEventRepository
+public class EventRepository(TicketSpotDbContext context) : IRepository<Event>
 {
     public new async Task<List<Event>> GetAllAsync() =>
-        await _context.Events
+        await context.Events
         .AsNoTracking()
         .AsQueryable()
         .Include(e => e.EventManagerId)
@@ -17,7 +16,7 @@ public class EventRepository(TicketSpotDbContext ticketSpotContext)
         .ToListAsync();
 
     public async Task<Event> GetAsync(int id) =>
-        await _context.Events
+        await context.Events
         .AsNoTracking()
         .AsQueryable()
         .Where(e => e.Id == id)
@@ -27,27 +26,27 @@ public class EventRepository(TicketSpotDbContext ticketSpotContext)
 
     public async Task<Event> CreateAsync(Event eventToCreate)
     {
-        await _context.Events.AddAsync(eventToCreate);
-        await _context.SaveChangesAsync();
+        await context.Events.AddAsync(eventToCreate);
+        await context.SaveChangesAsync();
         return eventToCreate;
     }
 
     public async Task<Event> UpdateAsync(Event updatedEvent)
     {
-        var itemToUpdate = await Get(x => x.Id == updatedEvent.Id)
+        var itemToUpdate = await GetAsync(updatedEvent.Id)
             ?? throw new RecordNotFoundException("The event to be updated is not found in the database");
 
-        _context.Events.Update(updatedEvent);
-        await _context.SaveChangesAsync();
+        context.Events.Update(updatedEvent);
+        await context.SaveChangesAsync();
         return updatedEvent;
     }
 
     public async Task DeleteAsync(int id)
     {
-        var itemToDelete = await GetAsync(id)
-            ?? throw new RecordNotFoundException(string.Format("Event with id: {0} is not found in the database", id));
+        var itemToDelete = new Event { Id = id };
 
-        _context.Events.Remove(itemToDelete);
-        await _context.SaveChangesAsync();
+        context.Attach(itemToDelete);
+        context.Events.Remove(itemToDelete);
+        await context.SaveChangesAsync();
     }
 }

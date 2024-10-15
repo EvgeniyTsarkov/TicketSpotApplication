@@ -1,35 +1,44 @@
 ﻿using Common.Models;
 using DataAccessLayer.Exceptions;
 using DataAccessLayer.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repository.Implementations;
 
-public class CustomerRepository(TicketSpotDbContext ticketSpotContext)
-    : BaseRepository<Customer>(ticketSpotContext), ICustomerRepository
+public class CustomerRepository(TicketSpotDbContext context) : IRepository<Customer>
 {
+    public async Task<List<Customer>> GetAllAsync() =>
+    await context.Customers.AsNoTracking().ToListAsync();
+
+    public async Task<Customer> GetAsync(int id) =>
+        await context.Customers.AsNoTracking()
+        .AsQueryable()
+        .Where(c => c.Id == id)
+        .SingleOrDefaultAsync();
+
     public async Task<Customer> CreateAsync(Customer customer)
     {
-        await _context.Customers.AddAsync(customer);
-        await _context.SaveChangesAsync();
+        await context.Customers.AddAsync(customer);
+        await context.SaveChangesAsync();
         return customer;
     }
 
     public async Task<Customer> UpdateAsync(Customer customer)
     {
-        var itemToUpdate = await Get(x => x.Id == customer.Id)
+        var itemToUpdate = await GetAsync(customer.Id)
             ?? throw new RecordNotFoundException("The customer to be updated is not found in the database");
 
-        _context.Customers.Update(customer);
-        await _context.SaveChangesAsync();
+        context.Customers.Update(customer);
+        await context.SaveChangesAsync();
         return customer;
     }
 
     public async Task DeleteAsync(int id)
     {
-        var itemToDelete = await Get(x => x.Id == id)
-            ?? throw new RecordNotFoundException(string.Format("Customer with id: {0} is not found in the database", id));
+        var itemToDelete = new Customer { Id = id };
 
-        _context.Customers.Remove(itemToDelete);
-        await _context.SaveChangesAsync();
+        context.Customers.Attach(itemToDelete);
+        context.Customers.Remove(itemToDelete);
+        await context.SaveChangesAsync();
     }
 }
