@@ -11,7 +11,6 @@ public class SeatRepository(TicketSpotDbContext context) : IRepository<Seat>
         await context.Seats
         .AsNoTracking()
         .AsQueryable()
-        .Include(s => s.Row)
         .ToListAsync();
 
     public async Task<Seat> GetAsync(int id) =>
@@ -19,7 +18,6 @@ public class SeatRepository(TicketSpotDbContext context) : IRepository<Seat>
         .AsNoTracking()
         .AsQueryable()
         .Where(s => s.Id == id)
-        .Include(s => s.Row)
         .SingleOrDefaultAsync();
 
     public async Task<Seat> CreateAsync(Seat seat)
