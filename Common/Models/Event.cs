@@ -11,5 +11,6 @@ public class Event
 
     public Venue Venue { get; set; }
     public EventManager EventManager { get; set; }
+    public ICollection<Seat> Seats { get; set; } = [];
     public ICollection<Ticket> Tickets { get; set; } = [];
 }

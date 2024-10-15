@@ -7,22 +7,42 @@ namespace DataAccessLayer.Repository.Implementations;
 
 public class EventRepository(TicketSpotDbContext context) : IRepository<Event>
 {
-    public new async Task<List<Event>> GetAllAsync() =>
-        await context.Events
+    public new async Task<List<Event>> GetAllAsync()
+    {
+        var eventRecords = await context.Events
         .AsNoTracking()
         .AsQueryable()
         .Include(e => e.EventManagerId)
         .Include(e => e.Venue)
         .ToListAsync();
 
-    public async Task<Event> GetAsync(int id) =>
-        await context.Events
+        foreach (var eventRecord in eventRecords)
+        {
+            eventRecord.Seats = eventRecord.Venue.Seats;
+        }
+
+        return eventRecords;
+    }
+
+    public async Task<Event> GetAsync(int id)
+    {
+        var eventRecord = await context.Events
         .AsNoTracking()
         .AsQueryable()
         .Where(e => e.Id == id)
         .Include(e => e.EventManagerId)
         .Include(e => e.Venue)
         .SingleOrDefaultAsync();
+
+        if (eventRecord == null)
+        {
+            return eventRecord;
+        }
+
+        eventRecord.Seats = eventRecord.Venue.Seats;
+
+        return eventRecord;
+    }
 
     public async Task<Event> CreateAsync(Event eventToCreate)
     {

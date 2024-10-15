@@ -8,11 +8,6 @@ public static class DatabaseRelationships
     public static ModelBuilder AddVenueRelationships(this ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Venue>()
-            .HasMany(v => v.Sections)
-            .WithOne(s => s.Venue)
-            .HasForeignKey(s => s.VenueId);
-
-        modelBuilder.Entity<Venue>()
             .HasMany(v => v.Events)
             .WithOne(e => e.Venue)
             .HasForeignKey(v => v.EventManagerId)
@@ -88,26 +83,6 @@ public static class DatabaseRelationships
             .HasMany(c => c.Tickets)
             .WithOne(t => t.Customer)
             .HasForeignKey(t => t.CustomerId);
-
-        return modelBuilder;
-    }
-
-    public static ModelBuilder AddRowsRelationships(this ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Row>()
-            .HasMany(r => r.Seats)
-            .WithOne(s => s.Row)
-            .HasForeignKey(s => s.Id);
-
-        return modelBuilder;
-    }
-
-    public static ModelBuilder AddSectionRelationships(this ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Section>()
-            .HasMany(s => s.Rows)
-            .WithOne(r => r.Section)
-            .HasForeignKey(r => r.Id);
 
         return modelBuilder;
     }
