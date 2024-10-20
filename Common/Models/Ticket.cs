@@ -1,6 +1,6 @@
 ﻿namespace Common.Models;
 
-public class Ticket
+public class Ticket : IEntity
 {
     public int Id { get; set; }
     public decimal Price { get; set; }
