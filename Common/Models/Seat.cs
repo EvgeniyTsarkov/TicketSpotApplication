@@ -1,6 +1,6 @@
 ﻿namespace Common.Models;
 
-public class Seat
+public class Seat : IEntity
 {
     public int Id { get; set; }
     public int SeatNumber { get; set; }
