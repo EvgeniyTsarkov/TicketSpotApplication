@@ -43,20 +43,37 @@ INSERT INTO [dbo].[Events]
            ,1)
 GO
 
+
+-- Add sections
+
+USE [TicketSpotDb]
+GO
+
+INSERT INTO [dbo].[Sections]
+           ([Name])
+     VALUES
+           ('A'),
+		   ('B'),
+		   ('C'),
+		   ('D'),
+		   ('E')
+GO
+
+
 -- Add seats 
 
 ---- First seat
 
-INSERT INTO [dbo].[Events]
-           ([Name]
-           ,[Date]
-           ,[Description]
-           ,[EventManagerId]
+INSERT INTO [dbo].[Seats]
+           ([SeatNumber]
+           ,[SectionId]
+           ,[RowNumber]
+           ,[EventId]
            ,[VenueId])
      VALUES
-           ('Lakers vs Celtics'
-           ,'2024-12-25 19:00:00'
-           ,'A regular season basketball game'
+           (5
+           ,1
+           ,5
            ,1
            ,1)
 GO
@@ -65,15 +82,15 @@ GO
 
 INSERT INTO [dbo].[Seats]
            ([SeatNumber]
-           ,[Section]
+           ,[SectionId]
            ,[RowNumber]
            ,[EventId]
            ,[VenueId])
      VALUES
            (1
-           ,'C'
+           ,3
            ,7
-           ,2
+           ,1
            ,1)
 GO
 
@@ -114,7 +131,7 @@ INSERT INTO [dbo].[Tickets]
      VALUES
            (2.25
            ,'2024-10-08'
-           ,2
+           ,1
            ,1
            ,1
            ,1)
@@ -130,11 +147,11 @@ INSERT INTO [dbo].[Tickets]
            ,[CustomerId]
            ,[StatusId])
      VALUES
-           (2.25
-           ,'2024-10-08'
+           (10.0
+           ,'2024-10-11'
+           ,1
+           ,1
            ,2
-           ,1
-           ,1
            ,2)
 GO
 

@@ -35,9 +35,9 @@ public class VenueService(
             throw new RecordNotFoundException($"Record with id: {id} was not found");
         }
 
-        var seats = await _seatRepository.GetAllByConditionAsync(x => x.VenueId == 2);
+        var seats = await _seatRepository.GetAllByConditionAsync(x => x.VenueId == id, x => x.Section);
 
-        var sections = seats.Select(seat => seat.Section).ToArray();
+        var sections = seats.Select(seat => seat.Section.Name).ToArray();
 
         var sectionsToVenueDto = new SectionsToVenueDto()
         {

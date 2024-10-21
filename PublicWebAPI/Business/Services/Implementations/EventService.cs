@@ -26,25 +26,26 @@ public class EventService(
         return events;
     }
 
-    public async Task<List<SeatWithPricesDto>> GetByIdAndSectionId(int event_id, char section_id)
+    public async Task<List<SeatWithPricesDto>> GetByIdAndSectionId(int event_id, int section_id)
     {
         var ticketsByEvent = await _ticketRepository
             .GetAllByConditionAsync(
             ticket => ticket.EventId == event_id,
             ticket => ticket.Seat,
-            ticket => ticket.Status);
+            ticket => ticket.Status, 
+            ticket => ticket.Seat.Section);
 
         var seatsWithPricesDtos = new List<SeatWithPricesDto>();
 
         foreach (var ticket in ticketsByEvent)
         {
-            if (ticket.Seat.Section == section_id)
+            if (ticket.Seat.SectionId == section_id)
             {
                 var seatWithPriceDto = new SeatWithPricesDto()
                 {
                     SeatNumber = ticket.Seat.Id,
                     Row = ticket.Seat.RowNumber,
-                    Section = section_id,
+                    Section = ticket.Seat.Section.Name,
                     Price = ticket.Price,
                     Status = ticket.Status,
                 };
