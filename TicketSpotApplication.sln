@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicWebAPI", "PublicWebAPI\PublicWebAPI.csproj", "{E2A7B126-8D8F-4053-8A3E-8E76ABB41B17}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{DA47BCB4-A958-477F-B69B-F2AFBBC30FF2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts and other data", "Scripts and other data", "{DA47BCB4-A958-477F-B69B-F2AFBBC30FF2}"
 	ProjectSection(SolutionItems) = preProject
 		Data_seeding_scripts.sql = Data_seeding_scripts.sql
 	EndProjectSection

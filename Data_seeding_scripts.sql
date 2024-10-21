@@ -130,6 +130,7 @@ INSERT INTO [dbo].[PriceOptions]
 GO
 
 
+
 -- Add tickets
 
 ---- First ticket
@@ -140,14 +141,16 @@ INSERT INTO [dbo].[Tickets]
            ,[EventId]
            ,[SeatId]
            ,[CustomerId]
-           ,[StatusId])
+           ,[StatusId]
+           ,[CartId])
      VALUES
            (1
            ,'2024-10-08'
            ,1
            ,1
            ,1
-           ,1)
+           ,1
+           ,'0a1b428a-9fb0-4ff2-90ef-d3d720304cc0')
 GO
 
 ---- Second ticket
@@ -158,18 +161,20 @@ INSERT INTO [dbo].[Tickets]
            ,[EventId]
            ,[SeatId]
            ,[CustomerId]
-           ,[StatusId])
+           ,[StatusId]
+           ,[CartId])
      VALUES
            (2
            ,'2024-10-11'
            ,1
            ,2
            ,1
-           ,2)
+           ,2
+           ,'0a1b428a-9fb0-4ff2-90ef-d3d720304cc0')
 GO
 
 
-
+-- Guid 0a1b428a-9fb0-4ff2-90ef-d3d720304cc0
 
 
 -- Database Update

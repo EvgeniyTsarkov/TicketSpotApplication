@@ -9,6 +9,7 @@ public class Ticket : IEntity
     public int CustomerId { get; set; }
     public int StatusId { get; set; }
     public int PriceOptionId { get; set; }
+    public Guid CartId { get; set; }
 
     public PriceOption PriceOption { get; set; }
     public Event Event { get; set; }

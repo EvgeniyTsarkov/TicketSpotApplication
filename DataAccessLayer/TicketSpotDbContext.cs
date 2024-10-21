@@ -14,6 +14,8 @@ public class TicketSpotDbContext(DbContextOptions<TicketSpotDbContext> options) 
     public DbSet<Status> Status { get; set; }
     public DbSet<Section> Sections { get; set; }
     public DbSet<PriceOption> PriceOptions { get; set; }
+    public DbSet<Cart> Carts { get; set; }
+    public DbSet<Payment> Payments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

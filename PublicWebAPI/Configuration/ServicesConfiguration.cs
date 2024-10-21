@@ -20,5 +20,6 @@ public static class ServicesConfiguration
         // Register services
         services.AddScoped<IVenueService, VenueService>();
         services.AddScoped<IEventService, EventService>();
+        services.AddScoped<IOrderService, OrderService>();
     }
 }
