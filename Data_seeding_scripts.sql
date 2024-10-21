@@ -47,7 +47,7 @@ INSERT INTO [dbo].[Events]
            ,'2024-12-25 19:00:00'
            ,'A regular season basketball game'
            ,1
-           ,2)
+           ,1)
 GO
 
 
@@ -69,7 +69,7 @@ INSERT INTO [dbo].[Events]
            ,'2024-12-25 19:00:00'
            ,'A regular season basketball game'
            ,1
-           ,2)
+           ,1)
 GO
 
 ---- Second seat
@@ -88,7 +88,7 @@ INSERT INTO [dbo].[Seats]
            ,'C'
            ,7
            ,2
-           ,2)
+           ,1)
 GO
 
 -- Add customer
@@ -105,6 +105,20 @@ INSERT INTO [dbo].[Customers]
            ,'jack.doe@mail.com')
 GO
 
+-- Add status
+
+USE [TicketSpotDb]
+GO
+
+INSERT INTO [dbo].[Status]
+           ([Name])
+     VALUES
+           ('Available'),
+		   ('Booked'),
+		   ('Purchased')
+GO
+
+
 -- Add tickets
 
 ---- First ticket
@@ -120,11 +134,13 @@ INSERT INTO [dbo].[Tickets]
            ,[PurchaseDate]
            ,[EventId]
            ,[SeatId]
-           ,[CustomerId])
+           ,[CustomerId]
+           ,[StatusId])
      VALUES
            (2.25
            ,'2024-10-08'
            ,2
+           ,1
            ,1
            ,1)
 GO
@@ -139,16 +155,22 @@ INSERT INTO [dbo].[Tickets]
            ,[PurchaseDate]
            ,[EventId]
            ,[SeatId]
-           ,[CustomerId])
+           ,[CustomerId]
+           ,[StatusId])
      VALUES
            (2.25
            ,'2024-10-08'
            ,2
            ,1
-           ,1)
+           ,1
+           ,2)
 GO
 
 
 
 
 
+-- Database Update
+
+-- dotnet ef migrations add MigrationName --project DataAccessLayer --startup-project PublicWebAPI
+-- dotnet ef database update --project DataAccessLayer --startup-project PublicWebAPI

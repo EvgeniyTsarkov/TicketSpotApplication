@@ -11,6 +11,7 @@ public class TicketSpotDbContext(DbContextOptions<TicketSpotDbContext> options) 
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<EventManager> EventManagers { get; set; }
+    public DbSet<Status> Status { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
