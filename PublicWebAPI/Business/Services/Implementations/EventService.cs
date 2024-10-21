@@ -33,7 +33,8 @@ public class EventService(
             ticket => ticket.EventId == event_id,
             ticket => ticket.Seat,
             ticket => ticket.Status, 
-            ticket => ticket.Seat.Section);
+            ticket => ticket.Seat.Section, 
+            ticket => ticket.PriceOption);
 
         var seatsWithPricesDtos = new List<SeatWithPricesDto>();
 
@@ -46,7 +47,7 @@ public class EventService(
                     SeatNumber = ticket.Seat.Id,
                     Row = ticket.Seat.RowNumber,
                     Section = ticket.Seat.Section.Name,
-                    Price = ticket.Price,
+                    PriceOption = ticket.PriceOption,
                     Status = ticket.Status,
                 };
 

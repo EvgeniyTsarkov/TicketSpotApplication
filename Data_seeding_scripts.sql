@@ -117,19 +117,32 @@ INSERT INTO [dbo].[Status]
 GO
 
 
+-- Add PriceOptions
+
+INSERT INTO [dbo].[PriceOptions]
+           ([Name]
+           ,[Price])
+     VALUES
+           ('Discounted Price'
+           ,25.00),
+		   ('Full price' 
+		   ,50.00)
+GO
+
+
 -- Add tickets
 
 ---- First ticket
 
 INSERT INTO [dbo].[Tickets]
-           ([Price]
+           ([PriceOptionId]
            ,[PurchaseDate]
            ,[EventId]
            ,[SeatId]
            ,[CustomerId]
            ,[StatusId])
      VALUES
-           (2.25
+           (1
            ,'2024-10-08'
            ,1
            ,1
@@ -140,18 +153,18 @@ GO
 ---- Second ticket
 
 INSERT INTO [dbo].[Tickets]
-           ([Price]
+           ([PriceOptionId]
            ,[PurchaseDate]
            ,[EventId]
            ,[SeatId]
            ,[CustomerId]
            ,[StatusId])
      VALUES
-           (10.0
+           (2
            ,'2024-10-11'
            ,1
-           ,1
            ,2
+           ,1
            ,2)
 GO
 

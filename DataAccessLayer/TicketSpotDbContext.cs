@@ -13,6 +13,7 @@ public class TicketSpotDbContext(DbContextOptions<TicketSpotDbContext> options) 
     public DbSet<EventManager> EventManagers { get; set; }
     public DbSet<Status> Status { get; set; }
     public DbSet<Section> Sections { get; set; }
+    public DbSet<PriceOption> PriceOptions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

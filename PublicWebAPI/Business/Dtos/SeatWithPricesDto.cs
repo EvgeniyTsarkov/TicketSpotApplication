@@ -7,7 +7,7 @@ public class SeatWithPricesDto
     public int SeatNumber { get; set; }
     public int Row { get; set; }
     public string Section { get; set; }
-    public decimal Price { get; set; }
 
+    public PriceOption PriceOption { get; set; }
     public Status Status { get; set; }
 }
