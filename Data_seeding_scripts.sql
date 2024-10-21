@@ -13,11 +13,7 @@ INSERT INTO [dbo].[EventManagers]
            ,'john.smith@mail.com')
 GO
 
-
 -- Add Venue
-
-USE [TicketSpotDb]
-GO
 
 INSERT INTO [dbo].[Venues]
            ([Name]
@@ -33,9 +29,6 @@ GO
 
 -- Add event
 
-USE [TicketSpotDb]
-GO
-
 INSERT INTO [dbo].[Events]
            ([Name]
            ,[Date]
@@ -50,11 +43,7 @@ INSERT INTO [dbo].[Events]
            ,1)
 GO
 
-
 -- Add seats 
-
-USE [TicketSpotDb]
-GO
 
 ---- First seat
 
@@ -74,9 +63,6 @@ GO
 
 ---- Second seat
 
-USE [TicketSpotDb]
-GO
-
 INSERT INTO [dbo].[Seats]
            ([SeatNumber]
            ,[Section]
@@ -92,8 +78,6 @@ INSERT INTO [dbo].[Seats]
 GO
 
 -- Add customer
-USE [TicketSpotDb]
-GO
 
 INSERT INTO [dbo].[Customers]
            ([FirstName]
@@ -107,9 +91,6 @@ GO
 
 -- Add status
 
-USE [TicketSpotDb]
-GO
-
 INSERT INTO [dbo].[Status]
            ([Name])
      VALUES
@@ -122,12 +103,6 @@ GO
 -- Add tickets
 
 ---- First ticket
-
-USE [TicketSpotDb]
-GO
-
-USE [TicketSpotDb]
-GO
 
 INSERT INTO [dbo].[Tickets]
            ([Price]
@@ -146,9 +121,6 @@ INSERT INTO [dbo].[Tickets]
 GO
 
 ---- Second ticket
-
-USE [TicketSpotDb]
-GO
 
 INSERT INTO [dbo].[Tickets]
            ([Price]
