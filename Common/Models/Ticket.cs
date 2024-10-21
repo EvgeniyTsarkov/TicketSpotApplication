@@ -5,6 +5,7 @@ public class Ticket : IEntity
     public int Id { get; set; }
     public decimal Price { get; set; }
     public DateTime PurchaseDate { get; set; }
+    public TicketStatus Status { get; set; }
     public int EventId { get; set; }
     public int SeatId { get; set; }
     public int CustomerId { get; set; }

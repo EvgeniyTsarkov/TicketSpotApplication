@@ -1,5 +1,6 @@
 ﻿using Common.Models;
 using DataAccessLayer.Repository.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using PublicWebAPI.Business.Services.Interfaces;
 
 namespace PublicWebAPI.Business.Services.Implementations;
@@ -21,5 +22,10 @@ public class EventService(
         }
 
         return events;
+    }
+
+    public async Task<IActionResult> GetByIdAndSectionId(int event_id, int section_id) 
+    { 
+
     }
 }
