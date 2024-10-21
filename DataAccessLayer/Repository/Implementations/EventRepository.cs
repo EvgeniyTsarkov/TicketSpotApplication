@@ -12,7 +12,7 @@ public class EventRepository(TicketSpotDbContext context)
         var eventRecords = await _entities
         .AsNoTracking()
         .AsQueryable()
-        .Include(e => e.EventManagerId)
+        .Include(e => e.EventManager)
         .Include(e => e.Venue)
         .ToListAsync();
 

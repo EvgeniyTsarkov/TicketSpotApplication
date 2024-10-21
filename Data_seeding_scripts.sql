@@ -91,4 +91,64 @@ INSERT INTO [dbo].[Seats]
            ,2)
 GO
 
+-- Add customer
+USE [TicketSpotDb]
+GO
+
+INSERT INTO [dbo].[Customers]
+           ([FirstName]
+           ,[LastName]
+           ,[Email])
+     VALUES
+           ('Jack'
+           ,'Doe'
+           ,'jack.doe@mail.com')
+GO
+
+-- Add tickets
+
+---- First ticket
+
+USE [TicketSpotDb]
+GO
+
+USE [TicketSpotDb]
+GO
+
+INSERT INTO [dbo].[Tickets]
+           ([Price]
+           ,[PurchaseDate]
+           ,[EventId]
+           ,[SeatId]
+           ,[CustomerId])
+     VALUES
+           (2.25
+           ,'2024-10-08'
+           ,2
+           ,1
+           ,1)
+GO
+
+---- Second ticket
+
+USE [TicketSpotDb]
+GO
+
+INSERT INTO [dbo].[Tickets]
+           ([Price]
+           ,[PurchaseDate]
+           ,[EventId]
+           ,[SeatId]
+           ,[CustomerId])
+     VALUES
+           (2.25
+           ,'2024-10-08'
+           ,2
+           ,1
+           ,1)
+GO
+
+
+
+
 

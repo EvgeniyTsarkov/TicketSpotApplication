@@ -1,10 +1,10 @@
 ﻿using Common.Models;
 using DataAccessLayer.Exceptions;
 using DataAccessLayer.Repository.Interfaces;
-using PublicWebAPI.Dtos;
-using PublicWebAPI.Services.Interfaces;
+using PublicWebAPI.Business.Dtos;
+using PublicWebAPI.Business.Services.Interfaces;
 
-namespace PublicWebAPI.Services.Implementations;
+namespace PublicWebAPI.Business.Services.Implementations;
 
 public class VenueService(
     IRepository<Venue> venueRepository,

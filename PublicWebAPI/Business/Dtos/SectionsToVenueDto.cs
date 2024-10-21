@@ -1,4 +1,4 @@
-﻿namespace PublicWebAPI.Dtos;
+﻿namespace PublicWebAPI.Business.Dtos;
 
 public class SectionsToVenueDto
 {

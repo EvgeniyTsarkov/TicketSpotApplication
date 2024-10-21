@@ -1,7 +1,7 @@
 ﻿using DataAccessLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using PublicWebAPI.Dtos;
-using PublicWebAPI.Services.Interfaces;
+using PublicWebAPI.Business.Dtos;
+using PublicWebAPI.Business.Services.Interfaces;
 
 namespace PublicWebAPI.Controllers;
 

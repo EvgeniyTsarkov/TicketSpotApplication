@@ -1,7 +1,7 @@
 ﻿using Common.Models;
-using PublicWebAPI.Dtos;
+using PublicWebAPI.Business.Dtos;
 
-namespace PublicWebAPI.Services.Interfaces;
+namespace PublicWebAPI.Business.Services.Interfaces;
 
 public interface IVenueService
 {
