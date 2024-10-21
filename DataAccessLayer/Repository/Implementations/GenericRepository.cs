@@ -40,6 +40,20 @@ public class GenericRepository<TEntity>(TicketSpotDbContext context)
         return await query.FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<List<TEntity>> GetAllByConditionAsync(
+        Expression<Func<TEntity, bool>> expression,
+        params Expression<Func<TEntity, object>>[] includes)
+    {
+        var query = _entities.AsNoTracking().Where(expression);
+
+        if (includes.Length != 0)
+        {
+            query = IncludeMultiple<TEntity>(query, includes);
+        }
+
+        return await query.ToListAsync();
+    }
+
     public async Task<TEntity> CreateAsync(TEntity entity)
     {
         await _entities.AddAsync(entity);
