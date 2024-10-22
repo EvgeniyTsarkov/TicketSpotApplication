@@ -37,7 +37,7 @@ public class PaymentsController(IPaymentService paymentService) : Controller
 
         try
         {
-            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Completed, "Sold");
+            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Completed, TicketStatus.Sold);
         }
         catch (RecordNotFoundException ex)
         {
@@ -54,7 +54,7 @@ public class PaymentsController(IPaymentService paymentService) : Controller
 
         try
         {
-            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Failed, "Available");
+            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Failed, TicketStatus.Available);
         }
         catch (RecordNotFoundException ex)
         {

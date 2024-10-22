@@ -1,13 +1,15 @@
-﻿namespace Common.Models;
+﻿using Common.Models.Enums;
+
+namespace Common.Models;
 
 public class Ticket : IEntity
 {
     public int Id { get; set; }
-    public DateTime PurchaseDate { get; set; }
+    public DateTime PurchaseDate { get; set; }    
+    public TicketStatus TicketStatus { get; set; }
     public int EventId { get; set; }
     public int SeatId { get; set; }
     public int CustomerId { get; set; }
-    public int TicketStatusId { get; set; }
     public int PriceOptionId { get; set; }
     public Guid CartId { get; set; }
 
@@ -15,5 +17,5 @@ public class Ticket : IEntity
     public Event Event { get; set; }
     public Seat Seat { get; set; }
     public Customer Customer { get; set; }
-    public TicketStatus TicketStatus { get; set; }
+
 }

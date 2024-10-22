@@ -63,17 +63,6 @@ INSERT INTO [dbo].[Sections]
 		   ('E')
 GO
 
--- Add Status
-print('Add Ticket statuses');
-
-INSERT INTO [dbo].[TicketStatus]
-           ([Name])
-     VALUES
-           ('Available'), 
-		   ('Booked'),
-		   ('Sold')
-GO
-
 -- Add seats 
 
 ---- First seat
@@ -182,7 +171,7 @@ INSERT INTO [dbo].[Tickets]
            ,[EventId]
            ,[SeatId]
            ,[CustomerId]
-           ,[TicketStatusId]
+           ,[TicketStatus]
            ,[CartId])
      VALUES
            (1
@@ -203,7 +192,7 @@ INSERT INTO [dbo].[Tickets]
            ,[EventId]
            ,[SeatId]
            ,[CustomerId]
-           ,[TicketStatusId]
+           ,[TicketStatus]
            ,[CartId])
      VALUES
            (2

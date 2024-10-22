@@ -32,8 +32,7 @@ public class EventService(
             .GetAllByConditionAsync(
             ticket => ticket.EventId == event_id,
             ticket => ticket.Seat,
-            ticket => ticket.TicketStatus, 
-            ticket => ticket.Seat.Section, 
+            ticket => ticket.Seat.Section,
             ticket => ticket.PriceOption);
 
         var seatsWithPricesDtos = new List<SeatWithPricesDto>();
@@ -48,7 +47,7 @@ public class EventService(
                     Row = ticket.Seat.RowNumber,
                     Section = ticket.Seat.Section.Name,
                     PriceOption = ticket.PriceOption,
-                    Status = ticket.TicketStatus,
+                    TicketStatus = ticket.TicketStatus.ToString(),
                 };
 
                 seatsWithPricesDtos.Add(seatWithPriceDto);

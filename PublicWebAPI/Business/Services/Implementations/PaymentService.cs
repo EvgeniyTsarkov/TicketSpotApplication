@@ -10,8 +10,7 @@ namespace PublicWebAPI.Business.Services.Implementations;
 public class PaymentService(
     IRepository<Payment> paymentRepository,
     ICartRepository cartRepository,
-    IRepository<Ticket> ticketRepository,
-    IRepository<TicketStatus> ticketStatusRepository)
+    IRepository<Ticket> ticketRepository)
     : IPaymentService
 {
     private readonly IRepository<Payment> _paymentRepository = paymentRepository
@@ -20,8 +19,6 @@ public class PaymentService(
         ?? throw new ArgumentException(nameof(cartRepository));
     private readonly IRepository<Ticket> _ticketRepository = ticketRepository
         ?? throw new ArgumentException(nameof(ticketRepository));
-    private readonly IRepository<TicketStatus> _ticketStatusRepository = ticketStatusRepository
-        ?? throw new ArgumentException(nameof(ticketStatusRepository));
 
     public async Task<PaymentStatus> GetPaymentStatusAsync(int id)
     {
@@ -34,7 +31,7 @@ public class PaymentService(
     public async Task<SeatsToPaymentDto> UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(
         int payment_id,
         PaymentStatus paymentStatus,
-        string ticketStatus)
+        TicketStatus ticketStatus)
     {
         var payment = await _paymentRepository.GetAsync(payment_id)
             ?? throw new RecordNotFoundException($"Payment with id {payment_id} was not found");
@@ -47,21 +44,16 @@ public class PaymentService(
         await _paymentRepository.UpdateAsync(payment);
 
         var tickets = await _ticketRepository.GetAllByConditionAsync(
-            ticket => ticket.CartId == cart.Id,
-            tickets => tickets.TicketStatus);
-
-        var ticketStatus_Sold = await _ticketStatusRepository.GetByConditionAsync(ts => ts.Name == ticketStatus);
+            ticket => ticket.CartId == cart.Id);
 
         foreach (var ticket in tickets)
         {
-            ticket.TicketStatus = ticketStatus_Sold;
-            ticket.TicketStatusId = ticketStatus_Sold.Id;
+            ticket.TicketStatus = ticketStatus;
             await _ticketRepository.UpdateAsync(ticket);
         }
 
         var ticketsResult = await _ticketRepository.GetAllByConditionAsync(
-            ticket => ticket.CartId == cart.Id,
-            ticket => ticket.TicketStatus);
+            ticket => ticket.CartId == cart.Id);
 
         return new SeatsToPaymentDto
         {
