@@ -27,7 +27,7 @@ public class PaymentsController(IPaymentService paymentService) : Controller
             return BadRequest(ex.Message);
         }
 
-        return Ok(paymentStatus);
+        return Ok($"Payment Status: {paymentStatus}");
     }
 
     [HttpPost("payments/{payment_id:int}/complete")]
@@ -44,7 +44,7 @@ public class PaymentsController(IPaymentService paymentService) : Controller
             return BadRequest(ex.Message);
         }
 
-        return Created();
+        return Ok(seatsToPaymentDto);
     }
 
     [HttpPost("payments/{payment_id:int}/failed")]
@@ -61,6 +61,6 @@ public class PaymentsController(IPaymentService paymentService) : Controller
             return BadRequest(ex.Message);
         }
 
-        return Created();
+        return Ok(seatsToPaymentDto);
     }
 }

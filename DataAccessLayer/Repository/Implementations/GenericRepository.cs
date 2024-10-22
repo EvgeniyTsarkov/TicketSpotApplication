@@ -80,7 +80,7 @@ public class GenericRepository<TEntity>(TicketSpotDbContext context)
     {
         var itemToUpdate = await GetAsync(entity.Id)
             ?? throw new RecordNotFoundException("The entity to be updated is not found in the database");
-
+       
         _entities.Update(entity);
         await _context.SaveChangesAsync();
         return entity;

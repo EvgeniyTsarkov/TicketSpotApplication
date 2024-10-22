@@ -147,7 +147,7 @@ INSERT INTO [dbo].[Payments]
            ([Status]
            ,[TotalAmount])
      VALUES
-           (1
+           (0
            ,0)
 GO
 

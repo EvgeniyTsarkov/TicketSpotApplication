@@ -46,20 +46,27 @@ public class PaymentService(
 
         await _paymentRepository.UpdateAsync(payment);
 
-        var tickets = await _ticketRepository.GetAllByConditionAsync(ticket => ticket.CartId == cart.Id);
+        var tickets = await _ticketRepository.GetAllByConditionAsync(
+            ticket => ticket.CartId == cart.Id,
+            tickets => tickets.TicketStatus);
 
         var ticketStatus_Sold = await _ticketStatusRepository.GetByConditionAsync(ts => ts.Name == ticketStatus);
 
         foreach (var ticket in tickets)
         {
+            ticket.TicketStatus = ticketStatus_Sold;
             ticket.TicketStatusId = ticketStatus_Sold.Id;
-            _ticketRepository.UpdateAsync(ticket);
+            await _ticketRepository.UpdateAsync(ticket);
         }
+
+        var ticketsResult = await _ticketRepository.GetAllByConditionAsync(
+            ticket => ticket.CartId == cart.Id,
+            ticket => ticket.TicketStatus);
 
         return new SeatsToPaymentDto
         {
-            Payment = payment,
-            Tickets = tickets
+            Status = payment.Status.ToString(),
+            Tickets = ticketsResult
         };
     }
 }
