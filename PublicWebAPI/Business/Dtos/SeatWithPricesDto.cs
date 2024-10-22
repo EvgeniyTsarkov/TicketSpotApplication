@@ -9,5 +9,5 @@ public class SeatWithPricesDto
     public string Section { get; set; }
 
     public PriceOption PriceOption { get; set; }
-    public Status Status { get; set; }
+    public TicketStatus Status { get; set; }
 }

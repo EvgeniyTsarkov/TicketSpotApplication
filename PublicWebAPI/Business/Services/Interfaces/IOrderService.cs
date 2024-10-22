@@ -9,4 +9,5 @@ public interface IOrderService
     Task<List<Ticket>> GetTicketsByCartIdAsync(string cartIdAsString);
     Task<CartStatus> AddTicketsToCart(string cartIdAsString, OrderPayload oprderPayload);
     Task DeleteSeatFromCart(string cart_id, int event_id, int seat_id);
+    Task<List<Ticket>> ChangeStatusOfAllTicketsInCartToBooked(string cartIdAsString);
 }

@@ -7,7 +7,7 @@ public class Ticket : IEntity
     public int EventId { get; set; }
     public int SeatId { get; set; }
     public int CustomerId { get; set; }
-    public int StatusId { get; set; }
+    public int TicketStatusId { get; set; }
     public int PriceOptionId { get; set; }
     public Guid CartId { get; set; }
 
@@ -15,5 +15,5 @@ public class Ticket : IEntity
     public Event Event { get; set; }
     public Seat Seat { get; set; }
     public Customer Customer { get; set; }
-    public Status Status { get; set; }
+    public TicketStatus TicketStatus { get; set; }
 }

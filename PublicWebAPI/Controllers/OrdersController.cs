@@ -1,5 +1,7 @@
-﻿using DataAccessLayer.Exceptions;
+﻿using Common.Models;
+using DataAccessLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
 
@@ -48,5 +50,22 @@ public class OrdersController(IOrderService orderService) : Controller
         }
 
         return NoContent();
+    }
+
+    [HttpPut("orders/carts/{cart_id}/book")]
+    public async Task<IActionResult> ChangeTicketsStatusToBooked(string cart_id)
+    {
+        List<Ticket> tickets;
+
+        try
+        {
+            tickets = await _orderService.ChangeStatusOfAllTicketsInCartToBooked(cart_id);
+        }
+        catch (RecordNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        return Ok(tickets);
     }
 }
