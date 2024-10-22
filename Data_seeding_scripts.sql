@@ -1,7 +1,9 @@
-﻿-- Add Venue manager
-
-USE [TicketSpotDb]
+﻿USE [TicketSpotDb]
 GO
+
+BEGIN TRANSACTION;
+
+-- Add Venue manager
 
 INSERT INTO [dbo].[EventManagers]
            ([FirstName]
@@ -172,6 +174,8 @@ INSERT INTO [dbo].[Tickets]
            ,2
            ,'0a1b428a-9fb0-4ff2-90ef-d3d720304cc0')
 GO
+
+COMMIT;
 
 
 -- Guid 0a1b428a-9fb0-4ff2-90ef-d3d720304cc0
