@@ -31,7 +31,10 @@ public class PaymentService(
         return payment.Status;
     }
 
-    public async Task<SeatsToPaymentDto> UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(int payment_id)
+    public async Task<SeatsToPaymentDto> UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(
+        int payment_id,
+        PaymentStatus paymentStatus,
+        string ticketStatus)
     {
         var payment = await _paymentRepository.GetAsync(payment_id)
             ?? throw new RecordNotFoundException($"Payment with id {payment_id} was not found");
@@ -39,13 +42,13 @@ public class PaymentService(
         var cart = await _cartRepository.GetByConditionAsync(cart => cart.PaymentId == payment_id)
             ?? throw new RecordNotFoundException($"Cart with payment id {payment_id} was not found");
 
-        payment.Status = PaymentStatus.Completed;
+        payment.Status = paymentStatus;
 
         await _paymentRepository.UpdateAsync(payment);
 
         var tickets = await _ticketRepository.GetAllByConditionAsync(ticket => ticket.CartId == cart.Id);
 
-        var ticketStatus_Sold = await _ticketStatusRepository.GetByConditionAsync(ticketStatus => ticketStatus.Name == "Sold");
+        var ticketStatus_Sold = await _ticketStatusRepository.GetByConditionAsync(ts => ts.Name == ticketStatus);
 
         foreach (var ticket in tickets)
         {

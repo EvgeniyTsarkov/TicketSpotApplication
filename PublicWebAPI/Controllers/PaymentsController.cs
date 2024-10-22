@@ -37,7 +37,24 @@ public class PaymentsController(IPaymentService paymentService) : Controller
 
         try
         {
-            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id);
+            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Completed, "Sold");
+        }
+        catch (RecordNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        return Created();
+    }
+
+    [HttpPost("payments/{payment_id:int}/failed")]
+    public async Task<IActionResult> UpdatePaymentStatusAndMarkAllRelatedSeatsAsAvailable(int payment_id)
+    {
+        SeatsToPaymentDto seatsToPaymentDto;
+
+        try
+        {
+            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Failed, "Available");
         }
         catch (RecordNotFoundException ex)
         {
