@@ -1,5 +1,6 @@
 ﻿using Common.Models;
 using DataAccessLayer.Exceptions;
+using DataAccessLayer.Repository.Implementations.Helpers;
 using DataAccessLayer.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -20,7 +21,7 @@ public class GenericRepository<TEntity>(TicketSpotDbContext context)
 
         if (includes.Length != 0)
         {
-            query = IncludeMultiple<TEntity>(query, includes);
+            query = QueryHelper<TEntity>.IncludeMultiple<TEntity>(query, includes);
         }
 
         return await query.ToListAsync();
@@ -34,10 +35,38 @@ public class GenericRepository<TEntity>(TicketSpotDbContext context)
 
         if (includes.Length != 0)
         {
-            query = IncludeMultiple<TEntity>(query, includes);
+            query = QueryHelper<TEntity>.IncludeMultiple<TEntity>(query, includes);
         }
 
         return await query.FirstOrDefaultAsync(c => c.Id == id);
+    }
+
+    public async Task<List<TEntity>> GetAllByConditionAsync(
+        Expression<Func<TEntity, bool>> expression,
+        params Expression<Func<TEntity, object>>[] includes)
+    {
+        var query = _entities.AsNoTracking().Where(expression);
+
+        if (includes.Length != 0)
+        {
+            query = QueryHelper<TEntity>.IncludeMultiple<TEntity>(query, includes);
+        }
+
+        return await query.ToListAsync();
+    }
+
+    public async Task<TEntity> GetByConditionAsync(
+        Expression<Func<TEntity, bool>> expression,
+        params Expression<Func<TEntity, object>>[] includes)
+    {
+        var query = _entities.AsNoTracking().Where(expression);
+
+        if (includes.Length != 0)
+        {
+            query = QueryHelper<TEntity>.IncludeMultiple<TEntity>(query, includes);
+        }
+
+        return await query.FirstOrDefaultAsync();
     }
 
     public async Task<TEntity> CreateAsync(TEntity entity)
@@ -51,7 +80,7 @@ public class GenericRepository<TEntity>(TicketSpotDbContext context)
     {
         var itemToUpdate = await GetAsync(entity.Id)
             ?? throw new RecordNotFoundException("The entity to be updated is not found in the database");
-
+       
         _entities.Update(entity);
         await _context.SaveChangesAsync();
         return entity;
@@ -63,19 +92,5 @@ public class GenericRepository<TEntity>(TicketSpotDbContext context)
         _entities.Attach(itemToDelete);
         _entities.Remove(itemToDelete);
         await _context.SaveChangesAsync();
-    }
-
-    private static IQueryable<TEntity> IncludeMultiple<T>(
-        IQueryable<TEntity> query,
-        params Expression<Func<TEntity, object>>[] includes)
-        where T : class
-    {
-        if (includes != null)
-        {
-            query = includes.Aggregate(query,
-                      (current, include) => current.Include(include));
-        }
-
-        return query;
     }
 }
