@@ -2,7 +2,7 @@
 
 namespace Common.Models;
 
-public class Payment
+public class Payment : IEntity
 {
     public int Id { get; set; }
     public PaymentStatus Status { get; set; } = PaymentStatus.Pending;

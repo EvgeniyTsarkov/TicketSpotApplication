@@ -16,6 +16,7 @@ public static class ServicesConfiguration
         services.AddScoped<IRepository<Seat>, GenericRepository<Seat>>();
         services.AddScoped<IRepository<Ticket>, GenericRepository<Ticket>>();
         services.AddScoped<IRepository<TicketStatus>, GenericRepository<TicketStatus>>();
+        services.AddScoped<IRepository<Payment>, GenericRepository<Payment>>();
         services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
 
