@@ -4,6 +4,7 @@ GO
 BEGIN TRANSACTION;
 
 -- Add Venue manager
+print('Add Event managers');
 
 INSERT INTO [dbo].[EventManagers]
            ([FirstName]
@@ -16,6 +17,8 @@ INSERT INTO [dbo].[EventManagers]
 GO
 
 -- Add Venue
+print('Add Venues');
+
 
 INSERT INTO [dbo].[Venues]
            ([Name]
@@ -30,6 +33,7 @@ INSERT INTO [dbo].[Venues]
 GO
 
 -- Add event
+print('Add Events');
 
 INSERT INTO [dbo].[Events]
            ([Name]
@@ -47,9 +51,7 @@ GO
 
 
 -- Add sections
-
-USE [TicketSpotDb]
-GO
+print('Add Sections');
 
 INSERT INTO [dbo].[Sections]
            ([Name])
@@ -61,10 +63,21 @@ INSERT INTO [dbo].[Sections]
 		   ('E')
 GO
 
+-- Add Status
+print('Add Ticket statuses');
+
+INSERT INTO [dbo].[TicketStatus]
+           ([Name])
+     VALUES
+           ('Available'), 
+		   ('Booked'),
+		   ('Sold')
+GO
 
 -- Add seats 
 
 ---- First seat
+print('Add Seat 1');
 
 INSERT INTO [dbo].[Seats]
            ([SeatNumber]
@@ -81,6 +94,7 @@ INSERT INTO [dbo].[Seats]
 GO
 
 ---- Second seat
+print('Add Seat 2');
 
 INSERT INTO [dbo].[Seats]
            ([SeatNumber]
@@ -97,6 +111,7 @@ INSERT INTO [dbo].[Seats]
 GO
 
 -- Add customer
+print('Add Customer');
 
 INSERT INTO [dbo].[Customers]
            ([FirstName]
@@ -108,18 +123,9 @@ INSERT INTO [dbo].[Customers]
            ,'jack.doe@mail.com')
 GO
 
--- Add status
-
-INSERT INTO [dbo].[Status]
-           ([Name])
-     VALUES
-           ('Available'),
-		   ('Booked'),
-		   ('Purchased')
-GO
-
 
 -- Add PriceOptions
+print('Add Price Option');
 
 INSERT INTO [dbo].[PriceOptions]
            ([Name]
@@ -131,11 +137,44 @@ INSERT INTO [dbo].[PriceOptions]
 		   ,50.00)
 GO
 
+--Add payment
+print('Add payment');
+
+USE [TicketSpotDb]
+GO
+
+INSERT INTO [dbo].[Payments]
+           ([Status]
+           ,[TotalAmount])
+     VALUES
+           (1
+           ,0)
+GO
+
+
+-- Add cart
+print('Add cart');
+
+INSERT INTO [dbo].[Carts]
+           ([Id]
+           ,[CartStatus]
+           ,[CustomerId]
+           ,[PaymentId])
+     VALUES
+           ('0a1b428a-9fb0-4ff2-90ef-d3d720304cc0'
+           , 1
+           , 1
+           , 1)
+GO
+
 
 
 -- Add tickets
+print('Add Tickets');
 
 ---- First ticket
+print('Add Ticket 1');
+
 
 INSERT INTO [dbo].[Tickets]
            ([PriceOptionId]
@@ -143,7 +182,7 @@ INSERT INTO [dbo].[Tickets]
            ,[EventId]
            ,[SeatId]
            ,[CustomerId]
-           ,[StatusId]
+           ,[TicketStatusId]
            ,[CartId])
      VALUES
            (1
@@ -156,6 +195,7 @@ INSERT INTO [dbo].[Tickets]
 GO
 
 ---- Second ticket
+print('Add Ticket 2');
 
 INSERT INTO [dbo].[Tickets]
            ([PriceOptionId]
@@ -163,7 +203,7 @@ INSERT INTO [dbo].[Tickets]
            ,[EventId]
            ,[SeatId]
            ,[CustomerId]
-           ,[StatusId]
+           ,[TicketStatusId]
            ,[CartId])
      VALUES
            (2
@@ -183,5 +223,5 @@ COMMIT;
 
 -- Database Update
 
--- dotnet ef migrations add MigrationName --project DataAccessLayer --startup-project PublicWebAPI
+-- dotnet ef migrations add InitialMigration --project DataAccessLayer --startup-project PublicWebAPI
 -- dotnet ef database update --project DataAccessLayer --startup-project PublicWebAPI
