@@ -1,8 +1,9 @@
 ﻿using Common.Models;
 using DataAccessLayer.Exceptions;
+using DataAccessLayer.Repository.Implementations.Helpers;
 using DataAccessLayer.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 
 namespace DataAccessLayer.Repository.Implementations;
 
@@ -27,5 +28,19 @@ public class CartRepository(TicketSpotDbContext ticketSpotDbContext) : ICartRepo
         await _context.SaveChangesAsync();
 
         return cart;
+    }
+
+    public async Task<Cart> GetByConditionAsync(
+    Expression<Func<Cart, bool>> expression,
+    params Expression<Func<Cart, object>>[] includes)
+    {
+        var query = _context.Carts.AsNoTracking().Where(expression);
+
+        if (includes.Length != 0)
+        {
+            query = QueryHelper<Cart>.IncludeMultiple<Cart>(query, includes);
+        }
+
+        return await query.FirstOrDefaultAsync();
     }
 }

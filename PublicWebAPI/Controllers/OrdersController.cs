@@ -23,7 +23,7 @@ public class OrdersController(IOrderService orderService) : Controller
     }
 
     [HttpPost("carts/{cart_id}")]
-    public async Task<IActionResult> AddTicketToCart(string cart_id, OrderPayload orderPayload)
+    public async Task<IActionResult> AddTicketToCart(string cart_id, OrderPayloadDto orderPayload)
     {
         try
         {
@@ -34,7 +34,7 @@ public class OrdersController(IOrderService orderService) : Controller
             return BadRequest(ex.Message);
         }
 
-        return Ok();
+        return Created();
     }
 
     [HttpDelete("orders/carts/{cart_id}/events/{event_id:int}/seats/{seat_id:int}")]

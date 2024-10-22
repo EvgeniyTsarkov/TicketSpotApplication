@@ -3,7 +3,6 @@ using DataAccessLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
-using System.Reflection.Metadata.Ecma335;
 
 namespace PublicWebAPI.Controllers;
 
@@ -11,7 +10,7 @@ namespace PublicWebAPI.Controllers;
 [Route("[controller]")]
 public class PaymentsController(IPaymentService paymentService) : Controller
 {
-    private readonly IPaymentService _paymentService = paymentService 
+    private readonly IPaymentService _paymentService = paymentService
         ?? throw new ArgumentNullException(nameof(paymentService));
 
     [HttpGet("payments/{payment_id:int}")]
@@ -31,5 +30,20 @@ public class PaymentsController(IPaymentService paymentService) : Controller
         return Ok(paymentStatus);
     }
 
+    [HttpPost("payments/{payment_id:int}/complete")]
+    public async Task<IActionResult> UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(int payment_id)
+    {
+        SeatsToPaymentDto seatsToPaymentDto;
 
+        try
+        {
+            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id);
+        }
+        catch (RecordNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        return Created();
+    }
 }

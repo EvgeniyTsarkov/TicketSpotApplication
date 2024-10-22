@@ -1,6 +1,6 @@
 ﻿namespace PublicWebAPI.Business.Dtos;
 
-public class OrderPayload
+public class OrderPayloadDto
 {
     public int EventId { get; set; }
     public int SeatId { get; set; }

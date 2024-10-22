@@ -1,4 +1,5 @@
 ﻿using Common.Models;
+using System.Linq.Expressions;
 
 namespace DataAccessLayer.Repository.Interfaces
 {
@@ -6,5 +7,8 @@ namespace DataAccessLayer.Repository.Interfaces
     {
         Task<Cart> GetAsync(Guid cartId);
         Task<Cart> UpdateAsync(Cart cart);
+        Task<Cart> GetByConditionAsync(
+            Expression<Func<Cart, bool>> expression,
+            params Expression<Func<Cart, object>>[] includes);
     }
 }

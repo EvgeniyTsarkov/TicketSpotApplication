@@ -26,7 +26,7 @@ public class OrderService(
         return await _ticketRepository.GetAllByConditionAsync(ticket => ticket.CartId == cardId);
     }
 
-    public async Task<CartStatus> AddTicketsToCart(string cartIdAsString, OrderPayload orderPayload)
+    public async Task<CartStatus> AddTicketsToCart(string cartIdAsString, OrderPayloadDto orderPayload)
     {
         var cartId = ParseCartId(cartIdAsString);
 
