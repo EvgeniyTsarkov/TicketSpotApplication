@@ -1,4 +1,6 @@
-﻿namespace Common.Models;
+﻿using Common.Models.Enums;
+
+namespace Common.Models;
 
 public class Payment
 {

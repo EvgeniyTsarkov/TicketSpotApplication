@@ -10,6 +10,9 @@ public interface IRepository<TEntity> where TEntity : class, IEntity
     Task<List<TEntity>> GetAllByConditionAsync(
         Expression<Func<TEntity, bool>> expression,
         params Expression<Func<TEntity, object>>[] includes);
+    Task<TEntity> GetByConditionAsync(
+        Expression<Func<TEntity, bool>> expression,
+        params Expression<Func<TEntity, object>>[] includes);
     Task<TEntity> CreateAsync(TEntity entity);
     Task<TEntity> UpdateAsync(TEntity entity);
     Task DeleteAsync(int id);
