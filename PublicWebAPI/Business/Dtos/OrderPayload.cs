@@ -1,4 +1,4 @@
-﻿namespace Common.Models;
+﻿namespace PublicWebAPI.Business.Dtos;
 
 public class OrderPayload
 {

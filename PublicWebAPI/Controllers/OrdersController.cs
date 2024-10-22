@@ -1,6 +1,6 @@
-﻿using Common.Models;
-using DataAccessLayer.Exceptions;
+﻿using DataAccessLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
 
 namespace PublicWebAPI.Controllers;
@@ -15,7 +15,7 @@ public class OrdersController(IOrderService orderService) : Controller
     [HttpGet("carts/{cart_id}")]
     public async Task<IActionResult> GetTicketsByCartId(string cart_id)
     {
-        var tickets = _orderService.GetTicketsByCartIdAsync(cart_id);
+        var tickets = await _orderService.GetTicketsByCartIdAsync(cart_id);
 
         return Ok(tickets);
     }
@@ -25,7 +25,7 @@ public class OrdersController(IOrderService orderService) : Controller
     {
         try
         {
-            _orderService.AddTicketsToCart(cart_id, orderPayload);
+            await _orderService.AddTicketsToCart(cart_id, orderPayload);
         }
         catch (RecordNotFoundException ex)
         {
@@ -35,9 +35,18 @@ public class OrdersController(IOrderService orderService) : Controller
         return Ok();
     }
 
-    [HttpDelete("orders/carts/{cart_id}/events/{event_id}/seats/{seat_id}")]
-    public async Task<IActionResult> DeleteTicketFromCart()
+    [HttpDelete("orders/carts/{cart_id}/events/{event_id:int}/seats/{seat_id:int}")]
+    public async Task<IActionResult> DeleteTicketFromCart(string cart_id, int event_id, int seat_id)
     {
+        try
+        {
+            await _orderService.DeleteSeatFromCart(cart_id, event_id, seat_id);
+        }
+        catch (RecordNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
         return NoContent();
     }
 }
