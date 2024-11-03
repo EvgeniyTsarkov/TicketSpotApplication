@@ -14,10 +14,7 @@ public class EventsControllerTests
     private readonly IEventService _eventService = Substitute.For<IEventService>();
     private readonly EventsController _controller;
 
-    public EventsControllerTests()
-    {
-        _controller = new EventsController(_eventService);
-    }
+    public EventsControllerTests() => _controller = new EventsController(_eventService);
 
     [TestMethod]
     public async Task GetAll_ReturnsOkResult_WithListOfEvents()

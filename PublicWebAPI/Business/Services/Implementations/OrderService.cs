@@ -23,7 +23,7 @@ public class OrderService(
         return await _ticketRepository.GetAllByConditionAsync(ticket => ticket.CartId == cardId);
     }
 
-    public async Task<CartStatus> AddTicketsToCart(string cartIdAsString, OrderPayloadDto orderPayload)
+    public async Task<CartStatus> AddTicketsToCartAsync(string cartIdAsString, OrderPayloadDto orderPayload)
     {
         var cartId = ParseCartId(cartIdAsString);
 
@@ -48,7 +48,7 @@ public class OrderService(
         return cart.CartStatus;
     }
 
-    public async Task DeleteSeatFromCart(string cartIdAsString, int event_id, int seat_id)
+    public async Task DeleteSeatFromCartAsync(string cartIdAsString, int event_id, int seat_id)
     {
         var cartId = ParseCartId(cartIdAsString);
 

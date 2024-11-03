@@ -7,7 +7,7 @@ namespace PublicWebAPI.Controllers;
 [Route("[controller]")]
 public class EventsController(IEventService eventService) : Controller
 {
-    private readonly IEventService _eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
+    private readonly IEventService _eventService = eventService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
