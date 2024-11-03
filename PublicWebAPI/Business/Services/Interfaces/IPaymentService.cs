@@ -7,6 +7,6 @@ namespace PublicWebAPI.Business.Services.Interfaces
     {
         Task<PaymentStatus> GetPaymentStatusAsync(int id);
         Task<SeatsToPaymentDto> UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(
-            int payment_id, PaymentStatus paymentStatus, TicketStatus ticketStatus);
+            int paymentId, PaymentStatus paymentStatus, TicketStatus ticketStatus);
     }
 }

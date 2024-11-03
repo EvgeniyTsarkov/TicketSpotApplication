@@ -1,7 +1,5 @@
 ﻿using Common.Models;
-using DataAccessLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
 
@@ -29,9 +27,9 @@ public class OrdersController(IOrderService orderService) : Controller
         {
             await _orderService.AddTicketsToCart(cart_id, orderPayload);
         }
-        catch (RecordNotFoundException ex)
+        catch (Exception)
         {
-            return BadRequest(ex.Message);
+            return BadRequest();
         }
 
         return Created();
@@ -44,9 +42,9 @@ public class OrdersController(IOrderService orderService) : Controller
         {
             await _orderService.DeleteSeatFromCart(cart_id, event_id, seat_id);
         }
-        catch (RecordNotFoundException ex)
+        catch (Exception)
         {
-            return BadRequest(ex.Message);
+            return BadRequest();
         }
 
         return NoContent();
@@ -61,9 +59,9 @@ public class OrdersController(IOrderService orderService) : Controller
         {
             tickets = await _orderService.ChangeStatusOfAllTicketsInCartToBooked(cart_id);
         }
-        catch (RecordNotFoundException ex)
+        catch (Exception)
         {
-            return BadRequest(ex.Message);
+            return BadRequest();
         }
 
         return Ok(tickets);

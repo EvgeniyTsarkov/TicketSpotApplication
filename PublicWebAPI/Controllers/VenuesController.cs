@@ -1,5 +1,4 @@
-﻿using DataAccessLayer.Exceptions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
 
@@ -28,9 +27,9 @@ public class VenuesController(IVenueService venueService) : Controller
         {
             sectionsToVenueDto = await _venueService.GetSectionsForVenue(id);
         }
-        catch (RecordNotFoundException ex)
+        catch (Exception)
         {
-            return BadRequest(ex.Message);
+            return BadRequest();
         }
 
         return Ok(sectionsToVenueDto);

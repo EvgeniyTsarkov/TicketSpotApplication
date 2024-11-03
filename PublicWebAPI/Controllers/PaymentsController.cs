@@ -22,9 +22,9 @@ public class PaymentsController(IPaymentService paymentService) : Controller
         {
             paymentStatus = await _paymentService.GetPaymentStatusAsync(payment_id);
         }
-        catch (RecordNotFoundException ex)
+        catch (Exception)
         {
-            return BadRequest(ex.Message);
+            return BadRequest();
         }
 
         return Ok($"Payment Status: {paymentStatus}");
@@ -39,9 +39,9 @@ public class PaymentsController(IPaymentService paymentService) : Controller
         {
             seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Completed, TicketStatus.Sold);
         }
-        catch (RecordNotFoundException ex)
+        catch (Exception)
         {
-            return BadRequest(ex.Message);
+            return BadRequest();
         }
 
         return Ok(seatsToPaymentDto);
@@ -56,9 +56,9 @@ public class PaymentsController(IPaymentService paymentService) : Controller
         {
             seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Failed, TicketStatus.Available);
         }
-        catch (RecordNotFoundException ex)
+        catch (Exception)
         {
-            return BadRequest(ex.Message);
+            return BadRequest();
         }
 
         return Ok(seatsToPaymentDto);

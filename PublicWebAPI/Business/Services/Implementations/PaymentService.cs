@@ -29,15 +29,15 @@ public class PaymentService(
     }
 
     public async Task<SeatsToPaymentDto> UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(
-        int payment_id,
+        int paymentId,
         PaymentStatus paymentStatus,
         TicketStatus ticketStatus)
     {
-        var payment = await _paymentRepository.GetAsync(payment_id)
-            ?? throw new RecordNotFoundException($"Payment with id {payment_id} was not found");
+        var payment = await _paymentRepository.GetAsync(paymentId)
+            ?? throw new RecordNotFoundException($"Payment with id {paymentId} was not found");
 
-        var cart = await _cartRepository.GetByConditionAsync(cart => cart.PaymentId == payment_id)
-            ?? throw new RecordNotFoundException($"Cart with payment id {payment_id} was not found");
+        var cart = await _cartRepository.GetByConditionAsync(cart => cart.PaymentId == paymentId)
+            ?? throw new RecordNotFoundException($"Cart with payment id {paymentId} was not found");
 
         payment.Status = paymentStatus;
 
