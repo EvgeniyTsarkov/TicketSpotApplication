@@ -18,10 +18,10 @@ public class EventsController(IEventService eventService) : Controller
     }
 
     [HttpGet("{event_id:int}/sections/{section_id:int}/seats")]
-    public async Task<IActionResult> GetByIdAndSectionId(int event_id, int section_id)
+    public async Task<IActionResult> GetByIdAndSectionId(int eventId, int sectionId)
     {
-        var seats = await _eventService.GetByIdAndSectionId(event_id, section_id);
+        var seatWithProcesDtos = await _eventService.GetByIdAndSectionId(eventId, sectionId);
 
-        return Ok(seats);
+        return Ok(seatWithProcesDtos);
     }
 }
