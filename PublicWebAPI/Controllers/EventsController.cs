@@ -9,7 +9,6 @@ public class EventsController(IEventService eventService) : Controller
 {
     private readonly IEventService _eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
 
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
