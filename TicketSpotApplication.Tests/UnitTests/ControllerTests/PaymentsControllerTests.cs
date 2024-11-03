@@ -12,12 +12,12 @@ using PublicWebAPI.Controllers;
 namespace TicketSpotApplication.Tests.UnitTests.ControllerTests;
 
 [TestClass]
-public class PaymentControllerTests
+public class PaymentsControllerTests
 {
     private readonly IPaymentService _paymentService = Substitute.For<IPaymentService>();
     private readonly PaymentsController _controller;
 
-    public PaymentControllerTests()
+    public PaymentsControllerTests()
     {
         _controller = new PaymentsController(_paymentService);
     }
