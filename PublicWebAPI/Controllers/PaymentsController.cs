@@ -1,5 +1,4 @@
 ﻿using Common.Models.Enums;
-using DataAccessLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
@@ -10,17 +9,16 @@ namespace PublicWebAPI.Controllers;
 [Route("[controller]")]
 public class PaymentsController(IPaymentService paymentService) : Controller
 {
-    private readonly IPaymentService _paymentService = paymentService
-        ?? throw new ArgumentNullException(nameof(paymentService));
+    private readonly IPaymentService _paymentService = paymentService;
 
-    [HttpGet("payments/{payment_id:int}")]
-    public async Task<IActionResult> GetAll(int payment_id)
+    [HttpGet("payments/{paymentIdd:int}")]
+    public async Task<IActionResult> GetPaymentStatus(int paymentId)
     {
         PaymentStatus paymentStatus;
 
         try
         {
-            paymentStatus = await _paymentService.GetPaymentStatusAsync(payment_id);
+            paymentStatus = await _paymentService.GetPaymentStatusAsync(paymentId);
         }
         catch (Exception)
         {
@@ -30,14 +28,14 @@ public class PaymentsController(IPaymentService paymentService) : Controller
         return Ok($"Payment Status: {paymentStatus}");
     }
 
-    [HttpPost("payments/{payment_id:int}/complete")]
-    public async Task<IActionResult> UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(int payment_id)
+    [HttpPost("payments/{paymentId:int}/complete")]
+    public async Task<IActionResult> UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(int paymentId)
     {
         SeatsToPaymentDto seatsToPaymentDto;
 
         try
         {
-            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Completed, TicketStatus.Sold);
+            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(paymentId, PaymentStatus.Completed, TicketStatus.Sold);
         }
         catch (Exception)
         {
@@ -47,14 +45,14 @@ public class PaymentsController(IPaymentService paymentService) : Controller
         return Ok(seatsToPaymentDto);
     }
 
-    [HttpPost("payments/{payment_id:int}/failed")]
-    public async Task<IActionResult> UpdatePaymentStatusAndMarkAllRelatedSeatsAsAvailable(int payment_id)
+    [HttpPost("payments/{paymentId:int}/failed")]
+    public async Task<IActionResult> UpdatePaymentStatusAndMarkAllRelatedSeatsAsAvailable(int paymentId)
     {
         SeatsToPaymentDto seatsToPaymentDto;
 
         try
         {
-            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(payment_id, PaymentStatus.Failed, TicketStatus.Available);
+            seatsToPaymentDto = await _paymentService.UpdatePaymentStatusAndMarkAllRelatedSeatsAsSold(paymentId, PaymentStatus.Failed, TicketStatus.Available);
         }
         catch (Exception)
         {
