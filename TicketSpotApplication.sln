@@ -7,9 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLayer", "DataAcce
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{95A7FA5C-6062-4284-84C8-6BEB76C65FCE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{66F734DD-7237-4613-8697-C0A89F6138B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublicWebAPI", "PublicWebAPI\PublicWebAPI.csproj", "{E2A7B126-8D8F-4053-8A3E-8E76ABB41B17}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test data", "Test data", "{DA47BCB4-A958-477F-B69B-F2AFBBC30FF2}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
+		Data_seeding_scripts.sql = Data_seeding_scripts.sql
+		OrderPayload.js = OrderPayload.js
 	EndProjectSection
 EndProject
 Global
@@ -26,6 +29,10 @@ Global
 		{95A7FA5C-6062-4284-84C8-6BEB76C65FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95A7FA5C-6062-4284-84C8-6BEB76C65FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95A7FA5C-6062-4284-84C8-6BEB76C65FCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2A7B126-8D8F-4053-8A3E-8E76ABB41B17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2A7B126-8D8F-4053-8A3E-8E76ABB41B17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2A7B126-8D8F-4053-8A3E-8E76ABB41B17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2A7B126-8D8F-4053-8A3E-8E76ABB41B17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
