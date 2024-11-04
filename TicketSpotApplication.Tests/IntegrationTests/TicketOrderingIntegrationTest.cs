@@ -1,6 +1,6 @@
-﻿using Common.Models;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
+using PublicWebAPI.Business.Dtos;
+using TicketSpotApplication.Tests.Helpers;
 
 namespace TicketSpotApplication.Tests.IntegrationTests;
 
@@ -10,6 +10,8 @@ public class TicketOrderingIntegrationTest
     private HttpClient _client;
     private WebApplicationFactory<Program> _factory;
 
+    private readonly Guid _cartId = new Guid("0a1b428a-9fb0-4ff2-90ef-d3d720304cc0");
+
     [TestInitialize]
     public void TestInitialize()
     {
@@ -18,15 +20,26 @@ public class TicketOrderingIntegrationTest
     }
 
     [TestMethod]
-    public async Task Test()
+    public async Task OrdersShallBePlacedCorrectly()
     {
-        var response = await _client.GetAsync("/Venues");
+        var orderPayload = new OrderPayloadDto
+        {
+            EventId = 1,
+            SeatId = 1,
+            PriceOptionId = 1
+        };
 
-        var content = await response.Content.ReadAsStringAsync();
+        var httpContent = TestHelper.BuildHttpContent(orderPayload);
 
-        var deserializedContent = JsonConvert.DeserializeObject<List<Venue>>(content);
+        var response = await _client.PostAsync($"/orders/carts/{_cartId}", httpContent);
 
-        Assert.IsTrue(true);
+        //var response = await _client.GetAsync("/Venues");
+
+        //var content = await response.Content.ReadAsStringAsync();
+
+        //var deserializedContent = JsonConvert.DeserializeObject<List<Venue>>(content);
+
+        //Assert.IsTrue(true);
     }
 
     [TestCleanup]
