@@ -5,10 +5,10 @@ using DataAccessLayer.Repository.Interfaces;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
-namespace TicketSpotApplication.Tests.IntegrationTests;
+namespace TicketSpotApplication.Tests.IntegrationTests.DALTests;
 
 [TestClass]
-public class GeneralRepositoryTest
+public class GeneralRepositoryTests
 {
     private TicketSpotDbContext _context;
     private IRepository<EventManager> _eventManagerRepository;
