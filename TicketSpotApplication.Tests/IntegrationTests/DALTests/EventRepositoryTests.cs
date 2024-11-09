@@ -145,6 +145,7 @@ public class EventRepositoryTests
         .Excluding(f => f.Venue)
         .Excluding(f => f.EventManager));
     }
+
     [TestCleanup]
     public void TestCleanup()
     {
