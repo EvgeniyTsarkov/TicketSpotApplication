@@ -21,7 +21,7 @@ public class CartRepository(TicketSpotDbContext ticketSpotDbContext) : ICartRepo
 
     public async Task<Cart> UpdateAsync(Cart cart)
     {
-        var cartToBeUpdated = await GetAsync(cart.Id)
+        _ = await GetAsync(cart.Id)
             ?? throw new RecordNotFoundException($"Card with id {cart.Id} not found");
 
         _context.Carts.Update(cart);

@@ -10,7 +10,7 @@ public class TicketOrderingIntegrationTest
     private HttpClient _client;
     private WebApplicationFactory<Program> _factory;
 
-    private readonly Guid _cartId = new Guid("0a1b428a-9fb0-4ff2-90ef-d3d720304cc0");
+    private readonly Guid _cartId = new("0a1b428a-9fb0-4ff2-90ef-d3d720304cc0");
 
     [TestInitialize]
     public void TestInitialize()
