@@ -18,6 +18,12 @@ public class TicketOrderingIntegrationTest
 {
     private HttpClient _client;
     private WebApplicationFactory<Program> _factory;
+    private IServiceScope _scope;
+    private ICartRepository _cartRepository;
+    private IRepository<Ticket> _ticketRepository;
+    private IRepository<Payment> _paymentRepository;
+    private IRepository<Customer> _customerRepository;
+    private IRepository<PriceOption> _priceOptionRepository;
 
     private readonly Guid _cartId = Guid.NewGuid();
 
@@ -69,13 +75,20 @@ public class TicketOrderingIntegrationTest
         });
 
         _client = _factory.CreateClient();
+
+        _scope = _factory.Services.CreateScope();
+
+        _cartRepository = _scope.ServiceProvider.GetRequiredService<ICartRepository>();
+        _ticketRepository = _scope.ServiceProvider.GetRequiredService<IRepository<Ticket>>();
+        _paymentRepository = _scope.ServiceProvider.GetRequiredService<IRepository<Payment>>();
+        _customerRepository = _scope.ServiceProvider.GetRequiredService<IRepository<Customer>>();
+        _priceOptionRepository = _scope.ServiceProvider.GetRequiredService<IRepository<PriceOption>>();
     }
 
     [TestMethod]
     public async Task OrdersShallBePlacedAndReleasedCorrectly()
     {
         // Arrange
-        using var scope = _factory.Services.CreateScope();
         await SeedTestData();
 
         // Seed cart
@@ -87,14 +100,11 @@ public class TicketOrderingIntegrationTest
             PaymentId = _payment.Id,
         };
 
-        var cartRepository = scope.ServiceProvider.GetRequiredService<ICartRepository>();
+        await _cartRepository.CreateAsync(cart);
 
-        await cartRepository.CreateAsync(cart);
-
-        var createdCart = await cartRepository.GetAsync(cart.Id);
+        var createdCart = await _cartRepository.GetAsync(cart.Id);
 
         createdCart.Should().NotBeNull();
-
 
         // Act - Place Tickets to Cart
         var orderPayload = new OrderPayloadDto
@@ -108,12 +118,11 @@ public class TicketOrderingIntegrationTest
 
         var placeOrderResponse = await _client.PostAsync($"/orders/carts/{_cartId}", httpContent);
 
-
         // Assert - Place Tickets to Cart
         placeOrderResponse.Should().NotBeNull();
         placeOrderResponse.StatusCode.Should().Be(HttpStatusCode.OK, "Wrong response status code.");
 
-        var cartWithTickets = await cartRepository.GetAsync(cart.Id);
+        var cartWithTickets = await _cartRepository.GetAsync(cart.Id);
 
         cartWithTickets.Should().NotBeNull("Cart does not exist");
         cartWithTickets.Tickets.Should().NotBeNullOrEmpty("Tickets have not been added to the cart.");
@@ -129,7 +138,6 @@ public class TicketOrderingIntegrationTest
 
         cartWithTickets.CartStatus.Should().Be(CartStatus.Active, "Cart status is incorrect.");
 
-
         // Act - Release tickets
         var releaseOrderResponse = await _client.DeleteAsync($"/orders/carts/{_cartId}/events/{orderPayload.EventId}/seats/{orderPayload.SeatId}");
 
@@ -137,21 +145,18 @@ public class TicketOrderingIntegrationTest
         releaseOrderResponse.Should().NotBeNull();
         releaseOrderResponse.StatusCode.Should().Be(HttpStatusCode.NoContent, "Wrong response status code.");
 
-        var cartWithReleasedTickets = await cartRepository.GetAsync(_cartId);
+        var cartWithReleasedTickets = await _cartRepository.GetAsync(_cartId);
 
         cartWithReleasedTickets.Should().NotBeNull("Cart does not exist.");
         cartWithReleasedTickets.Tickets.Should().BeEmpty("Tickets habe not been deleted.");
 
-        var ticketRepository = scope.ServiceProvider.GetRequiredService<IRepository<Ticket>>();
-        var removedTicket = await ticketRepository.GetAsync(1);
-
+        var removedTicket = await _ticketRepository.GetAsync(1);
         removedTicket.Should().NotBeNull("The requested ticket does not exist.");
         removedTicket.CustomerId.Should().BeNull("Customer id has not been reset after ticket release.");
         removedTicket.TicketStatus.Should().Be(TicketStatus.Available, "Ticket status has not been reset after ticket release.");
         removedTicket.CartId.Should().BeNull("Cart id has not been resent after ticket release.\"");
 
-        var paymentRepository = scope.ServiceProvider.GetRequiredService<IRepository<Payment>>();
-        var paymentAfterRemoval = await paymentRepository.GetAsync(cart.PaymentId);
+        var paymentAfterRemoval = await _paymentRepository.GetAsync(cart.PaymentId);
         paymentAfterRemoval.Should().NotBeNull("The requested payment does not exist.");
         paymentAfterRemoval.Status.Should().Be(PaymentStatus.Cancelled, "New payment status has not been assigned.");
         paymentAfterRemoval.TotalAmount.Should().Be(0);
@@ -170,19 +175,15 @@ public class TicketOrderingIntegrationTest
 
     private async Task SeedTestData()
     {
-        using var scope = _factory.Services.CreateScope();
-
         // Seed customer
-        var customerRepository = scope.ServiceProvider.GetRequiredService<IRepository<Customer>>();
-
-        var existingCustomer = await customerRepository.GetByConditionAsync(c =>
+        var existingCustomer = await _customerRepository.GetByConditionAsync(c =>
         c.FirstName == _customer.FirstName
         && c.LastName == _customer.LastName);
 
         if (existingCustomer == null)
         {
-            await customerRepository.CreateAsync(_customer);
-            existingCustomer = await customerRepository.GetByConditionAsync(c =>
+            await _customerRepository.CreateAsync(_customer);
+            existingCustomer = await _customerRepository.GetByConditionAsync(c =>
                 c.FirstName == _customer.FirstName
                 && c.LastName == _customer.LastName);
         }
@@ -193,16 +194,14 @@ public class TicketOrderingIntegrationTest
 
 
         // Seed payment
-        var paymentRepository = scope.ServiceProvider.GetRequiredService<IRepository<Payment>>();
-
-        var existingPayment = await paymentRepository.GetByConditionAsync(p =>
+        var existingPayment = await _paymentRepository.GetByConditionAsync(p =>
         p.Status == _payment.Status
         && p.TotalAmount == _payment.TotalAmount);
 
         if (existingPayment == null)
         {
-            await paymentRepository.CreateAsync(_payment);
-            existingPayment = await paymentRepository.GetByConditionAsync(p =>
+            await _paymentRepository.CreateAsync(_payment);
+            existingPayment = await _paymentRepository.GetByConditionAsync(p =>
             p.Status == _payment.Status
             && p.TotalAmount == _payment.TotalAmount);
         }
@@ -213,16 +212,14 @@ public class TicketOrderingIntegrationTest
 
 
         // Seed price option
-        var priceOptionRepository = scope.ServiceProvider.GetRequiredService<IRepository<PriceOption>>();
-
-        var existingPriceOption = await priceOptionRepository.GetByConditionAsync(po =>
+        var existingPriceOption = await _priceOptionRepository.GetByConditionAsync(po =>
         po.Name == _priceOption.Name
         && po.Price == _priceOption.Price);
 
         if (existingPriceOption == null)
         {
-            await priceOptionRepository.CreateAsync(_priceOption);
-            existingPriceOption = await priceOptionRepository.GetByConditionAsync(po =>
+            await _priceOptionRepository.CreateAsync(_priceOption);
+            existingPriceOption = await _priceOptionRepository.GetByConditionAsync(po =>
             po.Name == _priceOption.Name
             && po.Price == _priceOption.Price);
         }
@@ -233,9 +230,7 @@ public class TicketOrderingIntegrationTest
 
 
         // Seed ticket
-        var ticketRepository = scope.ServiceProvider.GetRequiredService<IRepository<Ticket>>();
-
-        var existingTicket = await ticketRepository.GetByConditionAsync(t =>
+        var existingTicket = await _ticketRepository.GetByConditionAsync(t =>
         t.SeatId == _ticket.SeatId
         && t.EventId == _ticket.EventId
         && t.PriceOptionId == _priceOption.Id);
@@ -243,8 +238,8 @@ public class TicketOrderingIntegrationTest
         if (existingTicket == null)
         {
             _ticket.PriceOptionId = _priceOption.Id;
-            await ticketRepository.CreateAsync(_ticket);
-            existingTicket = await ticketRepository.GetByConditionAsync(t =>
+            await _ticketRepository.CreateAsync(_ticket);
+            existingTicket = await _ticketRepository.GetByConditionAsync(t =>
             t.SeatId == _ticket.SeatId
             && t.EventId == _ticket.EventId
             && t.PriceOptionId == _priceOption.Id);
@@ -257,18 +252,10 @@ public class TicketOrderingIntegrationTest
 
     private async Task RemoveTestDataAsync()
     {
-        using var scope = _factory.Services.CreateScope();
+        await _customerRepository.DeleteAsync(_customer.Id);
 
-        var customerRepository = scope.ServiceProvider.GetRequiredService<IRepository<Customer>>();
+        await _paymentRepository.DeleteAsync(_payment.Id);
 
-        await customerRepository.DeleteAsync(_customer.Id);
-
-        var paymentRepository = scope.ServiceProvider.GetRequiredService<IRepository<Payment>>();
-
-        await paymentRepository.DeleteAsync(_payment.Id);
-
-        var priceOptionRepository = scope.ServiceProvider.GetRequiredService<IRepository<PriceOption>>();
-
-        await priceOptionRepository.DeleteAsync(_priceOption.Id);
+        await _priceOptionRepository.DeleteAsync(_priceOption.Id);
     }
 }
