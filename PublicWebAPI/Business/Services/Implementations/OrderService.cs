@@ -36,7 +36,8 @@ public class OrderService(
         var ticket = await _ticketRepository.GetByConditionAsync(
             ticket => ticket.EventId == orderPayload.EventId
             && ticket.SeatId == orderPayload.SeatId
-            && ticket.PriceOptionId == orderPayload.PriceOptionId,
+            && ticket.PriceOptionId == orderPayload.PriceOptionId
+            && ticket.TicketStatus == TicketStatus.Available,
             t => t.PriceOption)
             ?? throw new RecordNotFoundException($"The requested ticket not found.");
 
