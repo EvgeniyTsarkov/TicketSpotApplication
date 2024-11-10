@@ -25,7 +25,7 @@ public class TicketOrderingIntegrationTest
     private IRepository<Customer> _customerRepository;
     private IRepository<PriceOption> _priceOptionRepository;
 
-    private readonly Guid _cartId = Guid.NewGuid();
+    private static readonly Guid _cartId = Guid.NewGuid();
 
     private readonly Customer _customer = new()
     {
@@ -53,6 +53,14 @@ public class TicketOrderingIntegrationTest
         EventId = 1,
         SeatId = 1,
         PriceOptionId = 0,
+    };
+
+    private readonly Cart _cart = new()
+    {
+        Id = _cartId,
+        CartStatus = CartStatus.Empty,
+        CustomerId = 0,
+        PaymentId = 0,
     };
 
 
@@ -91,21 +99,6 @@ public class TicketOrderingIntegrationTest
         // Arrange
         await SeedTestData();
 
-        // Seed cart
-        var cart = new Cart
-        {
-            Id = _cartId,
-            CartStatus = CartStatus.Empty,
-            CustomerId = _customer.Id,
-            PaymentId = _payment.Id,
-        };
-
-        await _cartRepository.CreateAsync(cart);
-
-        var createdCart = await _cartRepository.GetAsync(cart.Id);
-
-        createdCart.Should().NotBeNull();
-
         // Act - Place Tickets to Cart
         var orderPayload = new OrderPayloadDto
         {
@@ -122,7 +115,7 @@ public class TicketOrderingIntegrationTest
         placeOrderResponse.Should().NotBeNull();
         placeOrderResponse.StatusCode.Should().Be(HttpStatusCode.OK, "Wrong response status code.");
 
-        var cartWithTickets = await _cartRepository.GetAsync(cart.Id);
+        var cartWithTickets = await _cartRepository.GetAsync(_cartId);
 
         cartWithTickets.Should().NotBeNull("Cart does not exist");
         cartWithTickets.Tickets.Should().NotBeNullOrEmpty("Tickets have not been added to the cart.");
@@ -131,7 +124,7 @@ public class TicketOrderingIntegrationTest
         var addedTicket = cartWithTickets.Tickets.First();
         addedTicket.TicketStatus.Should().Be(TicketStatus.Booked, "Ticket status is incorrect.");
         addedTicket.CartId.Should().Be(_cartId, "Cart id in the ticket is wrong.");
-        addedTicket.CustomerId.Should().Be(cart.CustomerId, "Customer id in the ticket is wrong.");
+        addedTicket.CustomerId.Should().Be(_cart.CustomerId, "Customer id in the ticket is wrong.");
 
         cartWithTickets.Payment.Status.Should().Be(PaymentStatus.Pending, "Payment status is wrong");
         cartWithTickets.Payment.TotalAmount.Should().Be(addedTicket.PriceOption.Price, "Payment total amount is incorrect.");
@@ -156,7 +149,7 @@ public class TicketOrderingIntegrationTest
         removedTicket.TicketStatus.Should().Be(TicketStatus.Available, "Ticket status has not been reset after ticket release.");
         removedTicket.CartId.Should().BeNull("Cart id has not been resent after ticket release.\"");
 
-        var paymentAfterRemoval = await _paymentRepository.GetAsync(cart.PaymentId);
+        var paymentAfterRemoval = await _paymentRepository.GetAsync(_cart.PaymentId);
         paymentAfterRemoval.Should().NotBeNull("The requested payment does not exist.");
         paymentAfterRemoval.Status.Should().Be(PaymentStatus.Cancelled, "New payment status has not been assigned.");
         paymentAfterRemoval.TotalAmount.Should().Be(0);
@@ -248,6 +241,17 @@ public class TicketOrderingIntegrationTest
         existingTicket.Should().NotBeNull();
 
         _ticket.Id = existingTicket.Id;
+
+
+        // Seed cart
+        _cart.CustomerId = existingCustomer.Id;
+        _cart.PaymentId = existingPayment.Id;
+
+        await _cartRepository.CreateAsync(_cart);
+
+        var createdCart = await _cartRepository.GetAsync(_cartId);
+
+        createdCart.Should().NotBeNull();
     }
 
     private async Task RemoveTestDataAsync()
