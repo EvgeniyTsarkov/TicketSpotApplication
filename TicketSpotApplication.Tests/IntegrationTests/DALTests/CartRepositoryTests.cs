@@ -203,6 +203,47 @@ public class CartRepositoryTests
         finalResult.Should().BeEquivalentTo(updatedCart);
     }
 
+    [TestMethod]
+    public async Task DeleteAsync_VerifyCartIsSuccessfullyDeleted()
+    {
+        var customer = new Customer
+        {
+            FirstName = "John",
+            LastName = "Smith",
+            Email = "1@1.com",
+        };
+
+        var payment = new Payment
+        {
+            Status = PaymentStatus.Pending,
+            TotalAmount = 0
+        };
+
+        var expectedCart = new Cart
+        {
+            Id = Guid.NewGuid(),
+            CartStatus = CartStatus.Active,
+            CustomerId = 1,
+            PaymentId = 1,
+        };
+
+        await _customerRepository.CreateAsync(customer);
+        await _paymentRepository.CreateAsync(payment);
+
+        await _cartRepository.CreateAsync(expectedCart);
+
+        var resultingCart = await _cartRepository.GetAsync(expectedCart.Id);
+
+        resultingCart.Should().NotBeNull();
+        resultingCart.Should().BeEquivalentTo(expectedCart);
+
+        await _cartRepository.DeleteAsync(expectedCart.Id);
+
+        var finalResult = await _cartRepository.GetAsync(expectedCart.Id);
+
+        finalResult.Should().BeNull();
+    }
+
     [TestCleanup]
     public void TestCleanup()
     {

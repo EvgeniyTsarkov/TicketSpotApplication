@@ -37,7 +37,7 @@ public class OrdersController(IOrderService orderService) : Controller
         return Ok(cartStatus);
     }
 
-    [HttpDelete("orders/carts/{cartId}/events/{eventId:int}/seats/{seatId:int}")]
+    [HttpDelete("carts/{cartId}/events/{eventId:int}/seats/{seatId:int}")]
     public async Task<IActionResult> DeleteTicketFromCart(string cartId, int eventId, int seatId)
     {
         try
@@ -52,7 +52,7 @@ public class OrdersController(IOrderService orderService) : Controller
         return NoContent();
     }
 
-    [HttpPut("orders/carts/{cartId}/book")]
+    [HttpPut("carts/{cartId}/book")]
     public async Task<IActionResult> ChangeTicketsStatusToBooked(string cartId)
     {
         List<Ticket> tickets;

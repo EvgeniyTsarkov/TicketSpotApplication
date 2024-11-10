@@ -9,12 +9,14 @@ namespace PublicWebAPI.Business.Services.Implementations;
 
 public class OrderService(
     IRepository<Ticket> ticketRepository,
-    ICartRepository cartRepository) : IOrderService
+    IRepository<Payment> paymentRepository,
+    ICartRepository cartRepository,
+    ITransactionHandler transactionHandler) : IOrderService
 {
-    private readonly IRepository<Ticket> _ticketRepository = ticketRepository
-        ?? throw new ArgumentNullException(nameof(ticketRepository));
-    private readonly ICartRepository _cartRepository = cartRepository
-        ?? throw new ArgumentNullException(nameof(cartRepository));
+    private readonly IRepository<Ticket> _ticketRepository = ticketRepository;
+    private readonly ICartRepository _cartRepository = cartRepository;
+    private readonly IRepository<Payment> _paymentRepository = paymentRepository;
+    private readonly ITransactionHandler _transactionHandler = transactionHandler;
 
     public async Task<List<Ticket>> GetTicketsByCartIdAsync(string cartIdAsString)
     {
@@ -33,17 +35,34 @@ public class OrderService(
         var ticket = await _ticketRepository.GetByConditionAsync(
             ticket => ticket.EventId == orderPayload.EventId
             && ticket.SeatId == orderPayload.SeatId
-            && ticket.PriceOptionId == orderPayload.PriceOptionId)
+            && ticket.PriceOptionId == orderPayload.PriceOptionId,
+            t => t.PriceOption)
             ?? throw new RecordNotFoundException($"The requested ticket not found.");
 
-        if (!cart.Tickets.Contains(ticket))
+        await _transactionHandler.BeginTransactionAsync();
+
+        try
         {
-            cart.Tickets.Add(ticket);
+            ticket.TicketStatus = TicketStatus.Booked;
+            ticket.CartId = cartId;
+            ticket.CustomerId = cart.CustomerId;
+            await _ticketRepository.UpdateAsync(ticket);
+
+            var updatedPayment = cart.Payment;
+            updatedPayment.TotalAmount += ticket.PriceOption.Price;
+            updatedPayment.Status = PaymentStatus.Pending;
+            await _paymentRepository.UpdateAsync(updatedPayment);
+
+            cart.CartStatus = CartStatus.Active;
+            await _cartRepository.UpdateAsync(cart);
+
+            await _transactionHandler.CommitAsync();
         }
-
-        cart.CartStatus = CartStatus.Active;
-
-        await _cartRepository.UpdateAsync(cart);
+        catch (Exception)
+        {
+            await _transactionHandler.RollbackAsync();
+            throw;
+        }
 
         return cart.CartStatus;
     }

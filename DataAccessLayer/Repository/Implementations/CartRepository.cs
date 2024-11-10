@@ -14,11 +14,24 @@ public class CartRepository(TicketSpotDbContext ticketSpotDbContext) : ICartRepo
 
     public async Task<Cart> GetAsync(Guid cartId)
     {
-        return await _context.Carts
-            .AsNoTracking()
-            .Include(c => c.Customer)
-            .Include(c => c.Payment)
-            .FirstOrDefaultAsync(cart => cart.Id == cartId);
+        var cart = await _context.Carts
+             .AsNoTracking()
+             .Include(c => c.Customer)
+             .Include(c => c.Payment)
+             .FirstOrDefaultAsync(cart => cart.Id == cartId);
+
+        if (cart != null)
+        {
+            var tickets = await _context.Tickets.
+                AsNoTracking()
+                .Where(t => t.CartId == cartId)
+                .Include(t => t.PriceOption)
+                .ToListAsync();
+
+            cart.Tickets = tickets;
+        }
+
+        return cart;
     }
 
     public async Task<Cart> UpdateAsync(Cart cart)
@@ -57,5 +70,20 @@ public class CartRepository(TicketSpotDbContext ticketSpotDbContext) : ICartRepo
         }
 
         return await query.FirstOrDefaultAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var itemToDelete = new Cart { Id = id };
+
+        var local = _context.Set<Cart>().Local.FirstOrDefault(entry => entry.Id.Equals(id));
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
+
+        _context.Entry(itemToDelete).State = EntityState.Deleted;
+
+        await _context.SaveChangesAsync();
     }
 }

@@ -11,4 +11,5 @@ public interface ICartRepository
     Task<Cart> GetByConditionAsync(
         Expression<Func<Cart, bool>> expression,
         params Expression<Func<Cart, object>>[] includes);
+    Task DeleteAsync(Guid id);
 }
