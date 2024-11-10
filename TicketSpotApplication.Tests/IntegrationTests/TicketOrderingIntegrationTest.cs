@@ -7,7 +7,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using PublicWebAPI.Business.Dtos;
 using System.Net;
 using TicketSpotApplication.Tests.Helpers;
@@ -83,11 +82,12 @@ public class TicketOrderingIntegrationTest
 
         // Assert - Place Tickets to Cart
         placeOrderResponse.Should().NotBeNull();
-        placeOrderResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        placeOrderResponse.StatusCode.Should().Be(HttpStatusCode.OK, "Wrong response status code.");
 
         var cartWithTickets = await cartRepository.GetAsync(cart.Id);
 
-        cartWithTickets.Tickets.Should().NotBeNullOrEmpty("Tickets have not been added tp the cart.");
+        cartWithTickets.Should().NotBeNull("Cart does not exist");
+        cartWithTickets.Tickets.Should().NotBeNullOrEmpty("Tickets have not been added to the cart.");
         cartWithTickets.Tickets.Count.Should().Be(1, "The number of tickets in the cart is incorrect.");
 
         var addedTicket = cartWithTickets.Tickets.First();
@@ -102,8 +102,35 @@ public class TicketOrderingIntegrationTest
 
 
         // Act - Release tickets
-        //var releaseOrderResponse = await _client.DeleteAsync($"/orders/carts/{_cartId}/events/{orderPayload.EventId}/seats/{orderPayload.SeatId}");
-    }*
+        var releaseOrderResponse = await _client.DeleteAsync($"/orders/carts/{_cartId}/events/{orderPayload.EventId}/seats/{orderPayload.SeatId}");
+
+        // Assert - Release tickets
+        releaseOrderResponse.Should().NotBeNull();
+        releaseOrderResponse.StatusCode.Should().Be(HttpStatusCode.NoContent, "Wrong response status code.");
+
+        var cartWithReleasedTickets = await cartRepository.GetAsync(_cartId);
+
+        cartWithReleasedTickets.Should().NotBeNull("Cart does not exist.");
+        cartWithReleasedTickets.Tickets.Should().BeEmpty("Tickets habe not been deleted.");
+
+        var ticketRepository = scope.ServiceProvider.GetRequiredService<IRepository<Ticket>>();
+
+        var removedTicket = await ticketRepository.GetAsync(1);
+
+        removedTicket.Should().NotBeNull("The requested ticket does not exist.");
+        removedTicket.CustomerId.Should().BeNull("Customer id has not been reset after ticket release.");
+        removedTicket.TicketStatus.Should().Be(TicketStatus.Available, "Ticket status has not been reset after ticket release.");
+        removedTicket.CartId.Should().BeNull("Cart id has not been resent after ticket release.\"");
+
+        var paymentRepository = scope.ServiceProvider.GetRequiredService<IRepository<Payment>>();
+
+        var paymentAfterRemoval = await paymentRepository.GetAsync(cart.PaymentId);
+        paymentAfterRemoval.Should().NotBeNull("The requested payment does not exist.");
+        paymentAfterRemoval.Status.Should().Be(PaymentStatus.Cancelled, "New payment status has not been assigned.");
+        paymentAfterRemoval.TotalAmount.Should().Be(0);
+
+        cartWithReleasedTickets.CartStatus.Should().Be(CartStatus.Empty, "Cart status is incorrect.");
+    }
 
     [TestCleanup]
     public async Task TestCleanup()

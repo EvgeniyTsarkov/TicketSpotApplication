@@ -2,6 +2,7 @@
 using Common.Models.Enums;
 using DataAccessLayer.Exceptions;
 using DataAccessLayer.Repository.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
 
@@ -78,10 +79,50 @@ public class OrderService(
             ticket => ticket.EventId == event_id
             && ticket.SeatId == seat_id);
 
-        if (ticketToBeDeleted != null)
+        if (ticketToBeDeleted == null)
         {
+            return;
+        }
+
+        await _transactionHandler.BeginTransactionAsync();
+
+        try
+        {
+            ticketToBeDeleted.CustomerId = null;
+            ticketToBeDeleted.TicketStatus = TicketStatus.Available;
+            ticketToBeDeleted.CartId = null;
+
+            await _ticketRepository.UpdateAsync(ticketToBeDeleted);
+
             cart.Tickets.Remove(ticketToBeDeleted);
+
+            if (cart.Tickets.IsNullOrEmpty())
+            {
+                cart.CartStatus = CartStatus.Empty;
+            }
+
             await _cartRepository.UpdateAsync(cart);
+
+            var payment = await _paymentRepository.GetAsync(cart.PaymentId);
+
+            if (payment != null)
+            {
+                payment.TotalAmount -= ticketToBeDeleted.PriceOption.Price;
+
+                if (payment.TotalAmount == 0)
+                {
+                    payment.Status = PaymentStatus.Cancelled;
+                }
+
+                await _paymentRepository.UpdateAsync(payment);
+            }
+
+            await _transactionHandler.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await _transactionHandler.RollbackAsync();
+            throw;
         }
     }
 
