@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublicWebAPI", "PublicWebAP
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test data", "Test data", "{DA47BCB4-A958-477F-B69B-F2AFBBC30FF2}"
 	ProjectSection(SolutionItems) = preProject
-		Data_seeding_scripts.sql = Data_seeding_scripts.sql
+		Commands and other notes.txt = Commands and other notes.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketSpotApplication.Tests", "TicketSpotApplication.Tests\TicketSpotApplication.Tests.csproj", "{BBE2C117-2D6C-45F6-9BCD-4C6210E45D0C}"

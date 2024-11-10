@@ -23,6 +23,7 @@ public class TicketSpotDbContext(DbContextOptions<TicketSpotDbContext> options) 
             .AddEventRelationships()
             .AddSeatRelationships()
             .AddTicketRelationships()
-            .AddCustomerRelationships();
+            .AddCustomerRelationships()
+            .SeedData();
     }
 }
