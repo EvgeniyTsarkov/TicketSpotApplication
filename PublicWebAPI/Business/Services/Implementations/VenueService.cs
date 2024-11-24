@@ -26,7 +26,7 @@ public class VenueService(
         return venues;
     }
 
-    public async Task<SectionsToVenueDto> GetSectionsForVenue(int id)
+    public async Task<SectionsToVenueDto> GetSectionsForVenueAsync(int id)
     {
         var venue = await _venueRepository.GetAsync(id);
 

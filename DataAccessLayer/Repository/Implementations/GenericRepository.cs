@@ -78,10 +78,17 @@ public class GenericRepository<TEntity>(TicketSpotDbContext context)
 
     public async Task<TEntity> UpdateAsync(TEntity entity)
     {
-        var itemToUpdate = await GetAsync(entity.Id)
+        var itemToUpdate = _context.Set<TEntity>().AsNoTracking().FirstOrDefault(e => e.Id == entity.Id)
             ?? throw new RecordNotFoundException("The entity to be updated is not found in the database");
-       
-        _entities.Update(entity);
+
+        var local = _context.Set<TEntity>().Local.FirstOrDefault(entry => entry.Id.Equals(entity.Id));
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
+
+        _context.Entry(entity).State = EntityState.Modified;
+
         await _context.SaveChangesAsync();
         return entity;
     }
@@ -89,8 +96,15 @@ public class GenericRepository<TEntity>(TicketSpotDbContext context)
     public async Task DeleteAsync(int id)
     {
         var itemToDelete = new TEntity { Id = id };
-        _entities.Attach(itemToDelete);
-        _entities.Remove(itemToDelete);
+
+        var local = _context.Set<TEntity>().Local.FirstOrDefault(entry => entry.Id.Equals(id));
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
+
+        _context.Entry(itemToDelete).State = EntityState.Deleted;
+
         await _context.SaveChangesAsync();
     }
 }

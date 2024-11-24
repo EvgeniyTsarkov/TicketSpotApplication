@@ -7,8 +7,7 @@ namespace PublicWebAPI.Controllers;
 [Route("[controller]")]
 public class EventsController(IEventService eventService) : Controller
 {
-    private readonly IEventService _eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
-
+    private readonly IEventService _eventService = eventService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -18,11 +17,11 @@ public class EventsController(IEventService eventService) : Controller
         return Ok(events);
     }
 
-    [HttpGet("{event_id:int}/sections/{section_id:int}/seats")]
-    public async Task<IActionResult> GetByIdAndSectionId(int event_id, int section_id)
+    [HttpGet("{eventId:int}/sections/{sectionId:int}/seats")]
+    public async Task<IActionResult> GetByIdAndSectionId(int eventId, int sectionId)
     {
-        var seats = await _eventService.GetByIdAndSectionId(event_id, section_id);
+        var seatWithProcesDtos = await _eventService.GetByIdAndSectionId(eventId, sectionId);
 
-        return Ok(seats);
+        return Ok(seatWithProcesDtos);
     }
 }

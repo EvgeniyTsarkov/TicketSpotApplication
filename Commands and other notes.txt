@@ -1,0 +1,7 @@
+﻿-- Guid 0a1b428a-9fb0-4ff2-90ef-d3d720304cc0
+
+
+-- Database Update
+
+-- dotnet ef migrations add InitialMigration --project DataAccessLayer --startup-project PublicWebAPI
+-- dotnet ef database update --project DataAccessLayer --startup-project PublicWebAPI

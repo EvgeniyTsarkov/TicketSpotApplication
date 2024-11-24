@@ -27,7 +27,7 @@ public class EventRepository(TicketSpotDbContext context)
     {
         var eventRecord = await _entities
         .AsNoTracking()
-        .Include(e => e.EventManagerId)
+        .Include(e => e.EventManager)
         .Include(e => e.Venue)
         .FirstOrDefaultAsync(e => e.Id == id);
 

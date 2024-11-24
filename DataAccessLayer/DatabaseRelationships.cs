@@ -59,20 +59,26 @@ public static class DatabaseRelationships
             .HasOne(t => t.Customer)
             .WithMany(c => c.Tickets)
             .HasForeignKey(t => t.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Ticket>()
             .HasOne(t => t.Event)
             .WithMany(e => e.Tickets)
             .HasForeignKey(t => t.EventId)
             .HasForeignKey(t => t.EventId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Ticket>()
             .HasOne(t => t.Seat)
             .WithMany(s => s.Tickets)
             .HasForeignKey(t => t.SeatId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Ticket>()
+            .HasOne(t => t.Cart)
+            .WithMany(c => c.Tickets)
+            .HasForeignKey(t => t.CartId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         return modelBuilder;
     }

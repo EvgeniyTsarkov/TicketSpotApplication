@@ -7,7 +7,7 @@ namespace PublicWebAPI.Business.Services.Interfaces;
 public interface IOrderService
 {
     Task<List<Ticket>> GetTicketsByCartIdAsync(string cartIdAsString);
-    Task<CartStatus> AddTicketsToCart(string cartIdAsString, OrderPayloadDto oprderPayload);
-    Task DeleteSeatFromCart(string cart_id, int event_id, int seat_id);
+    Task<CartStatus> AddTicketsToCartAsync(string cartIdAsString, OrderPayloadDto oprderPayload);
+    Task DeleteSeatFromCartAsync(string cart_id, int event_id, int seat_id);
     Task<List<Ticket>> ChangeStatusOfAllTicketsInCartToBooked(string cartIdAsString);
 }

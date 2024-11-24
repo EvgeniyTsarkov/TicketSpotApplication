@@ -8,7 +8,7 @@ namespace PublicWebAPI.Controllers;
 [Route("[controller]")]
 public class VenuesController(IVenueService venueService) : Controller
 {
-    private readonly IVenueService _venueService = venueService ?? throw new ArgumentNullException(nameof(venueService));
+    private readonly IVenueService _venueService = venueService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -25,7 +25,7 @@ public class VenuesController(IVenueService venueService) : Controller
 
         try
         {
-            sectionsToVenueDto = await _venueService.GetSectionsForVenue(id);
+            sectionsToVenueDto = await _venueService.GetSectionsForVenueAsync(id);
         }
         catch (Exception)
         {

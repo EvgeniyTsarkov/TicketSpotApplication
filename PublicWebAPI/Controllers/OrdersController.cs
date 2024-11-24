@@ -1,4 +1,5 @@
 ﻿using Common.Models;
+using Common.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
@@ -9,38 +10,39 @@ namespace PublicWebAPI.Controllers;
 [Route("[controller]")]
 public class OrdersController(IOrderService orderService) : Controller
 {
-    private readonly IOrderService _orderService = orderService
-        ?? throw new ArgumentNullException(nameof(orderService));
+    private readonly IOrderService _orderService = orderService;
 
-    [HttpGet("carts/{cart_id}")]
-    public async Task<IActionResult> GetTicketsByCartId(string cart_id)
+    [HttpGet("carts/{cartId}")]
+    public async Task<IActionResult> GetTicketsByCartId(string cartId)
     {
-        var tickets = await _orderService.GetTicketsByCartIdAsync(cart_id);
+        var tickets = await _orderService.GetTicketsByCartIdAsync(cartId);
 
         return Ok(tickets);
     }
 
-    [HttpPost("carts/{cart_id}")]
-    public async Task<IActionResult> AddTicketToCart(string cart_id, OrderPayloadDto orderPayload)
+    [HttpPost("carts/{cartId}")]
+    public async Task<IActionResult> AddTicketToCart(string cartId, OrderPayloadDto orderPayload)
     {
+        CartStatus cartStatus;
+
         try
         {
-            await _orderService.AddTicketsToCart(cart_id, orderPayload);
+            cartStatus = await _orderService.AddTicketsToCartAsync(cartId, orderPayload);
         }
         catch (Exception)
         {
             return BadRequest();
         }
 
-        return Created();
+        return Ok(cartStatus);
     }
 
-    [HttpDelete("orders/carts/{cart_id}/events/{event_id:int}/seats/{seat_id:int}")]
-    public async Task<IActionResult> DeleteTicketFromCart(string cart_id, int event_id, int seat_id)
+    [HttpDelete("carts/{cartId}/events/{eventId:int}/seats/{seatId:int}")]
+    public async Task<IActionResult> DeleteTicketFromCart(string cartId, int eventId, int seatId)
     {
         try
         {
-            await _orderService.DeleteSeatFromCart(cart_id, event_id, seat_id);
+            await _orderService.DeleteSeatFromCartAsync(cartId, eventId, seatId);
         }
         catch (Exception)
         {
@@ -50,14 +52,14 @@ public class OrdersController(IOrderService orderService) : Controller
         return NoContent();
     }
 
-    [HttpPut("orders/carts/{cart_id}/book")]
-    public async Task<IActionResult> ChangeTicketsStatusToBooked(string cart_id)
+    [HttpPut("carts/{cartId}/book")]
+    public async Task<IActionResult> ChangeTicketsStatusToBooked(string cartId)
     {
         List<Ticket> tickets;
 
         try
         {
-            tickets = await _orderService.ChangeStatusOfAllTicketsInCartToBooked(cart_id);
+            tickets = await _orderService.ChangeStatusOfAllTicketsInCartToBooked(cartId);
         }
         catch (Exception)
         {

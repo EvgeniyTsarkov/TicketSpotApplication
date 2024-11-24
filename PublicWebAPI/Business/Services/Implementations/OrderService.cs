@@ -2,6 +2,7 @@
 using Common.Models.Enums;
 using DataAccessLayer.Exceptions;
 using DataAccessLayer.Repository.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 using PublicWebAPI.Business.Dtos;
 using PublicWebAPI.Business.Services.Interfaces;
 
@@ -9,12 +10,14 @@ namespace PublicWebAPI.Business.Services.Implementations;
 
 public class OrderService(
     IRepository<Ticket> ticketRepository,
-    ICartRepository cartRepository) : IOrderService
+    IRepository<Payment> paymentRepository,
+    ICartRepository cartRepository,
+    ITransactionHandler transactionHandler) : IOrderService
 {
-    private readonly IRepository<Ticket> _ticketRepository = ticketRepository
-        ?? throw new ArgumentNullException(nameof(ticketRepository));
-    private readonly ICartRepository _cartRepository = cartRepository
-        ?? throw new ArgumentNullException(nameof(cartRepository));
+    private readonly IRepository<Ticket> _ticketRepository = ticketRepository;
+    private readonly ICartRepository _cartRepository = cartRepository;
+    private readonly IRepository<Payment> _paymentRepository = paymentRepository;
+    private readonly ITransactionHandler _transactionHandler = transactionHandler;
 
     public async Task<List<Ticket>> GetTicketsByCartIdAsync(string cartIdAsString)
     {
@@ -23,7 +26,7 @@ public class OrderService(
         return await _ticketRepository.GetAllByConditionAsync(ticket => ticket.CartId == cardId);
     }
 
-    public async Task<CartStatus> AddTicketsToCart(string cartIdAsString, OrderPayloadDto orderPayload)
+    public async Task<CartStatus> AddTicketsToCartAsync(string cartIdAsString, OrderPayloadDto orderPayload)
     {
         var cartId = ParseCartId(cartIdAsString);
 
@@ -33,22 +36,40 @@ public class OrderService(
         var ticket = await _ticketRepository.GetByConditionAsync(
             ticket => ticket.EventId == orderPayload.EventId
             && ticket.SeatId == orderPayload.SeatId
-            && ticket.PriceOptionId == orderPayload.PriceOptionId)
+            && ticket.PriceOptionId == orderPayload.PriceOptionId
+            && ticket.TicketStatus == TicketStatus.Available,
+            t => t.PriceOption)
             ?? throw new RecordNotFoundException($"The requested ticket not found.");
 
-        if (!cart.Tickets.Contains(ticket))
+        await _transactionHandler.BeginTransactionAsync();
+
+        try
         {
-            cart.Tickets.Add(ticket);
+            ticket.TicketStatus = TicketStatus.Booked;
+            ticket.CartId = cartId;
+            ticket.CustomerId = cart.CustomerId;
+            await _ticketRepository.UpdateAsync(ticket);
+
+            var updatedPayment = cart.Payment;
+            updatedPayment.TotalAmount += ticket.PriceOption.Price;
+            updatedPayment.Status = PaymentStatus.Pending;
+            await _paymentRepository.UpdateAsync(updatedPayment);
+
+            cart.CartStatus = CartStatus.Active;
+            await _cartRepository.UpdateAsync(cart);
+
+            await _transactionHandler.CommitAsync();
         }
-
-        cart.CartStatus = CartStatus.Active;
-
-        await _cartRepository.UpdateAsync(cart);
+        catch (Exception)
+        {
+            await _transactionHandler.RollbackAsync();
+            throw;
+        }
 
         return cart.CartStatus;
     }
 
-    public async Task DeleteSeatFromCart(string cartIdAsString, int event_id, int seat_id)
+    public async Task DeleteSeatFromCartAsync(string cartIdAsString, int event_id, int seat_id)
     {
         var cartId = ParseCartId(cartIdAsString);
 
@@ -59,10 +80,50 @@ public class OrderService(
             ticket => ticket.EventId == event_id
             && ticket.SeatId == seat_id);
 
-        if (ticketToBeDeleted != null)
+        if (ticketToBeDeleted == null)
         {
+            return;
+        }
+
+        await _transactionHandler.BeginTransactionAsync();
+
+        try
+        {
+            ticketToBeDeleted.CustomerId = null;
+            ticketToBeDeleted.TicketStatus = TicketStatus.Available;
+            ticketToBeDeleted.CartId = null;
+
+            await _ticketRepository.UpdateAsync(ticketToBeDeleted);
+
             cart.Tickets.Remove(ticketToBeDeleted);
+
+            if (cart.Tickets.IsNullOrEmpty())
+            {
+                cart.CartStatus = CartStatus.Empty;
+            }
+
             await _cartRepository.UpdateAsync(cart);
+
+            var payment = await _paymentRepository.GetAsync(cart.PaymentId);
+
+            if (payment != null)
+            {
+                payment.TotalAmount -= ticketToBeDeleted.PriceOption.Price;
+
+                if (payment.TotalAmount == 0)
+                {
+                    payment.Status = PaymentStatus.Cancelled;
+                }
+
+                await _paymentRepository.UpdateAsync(payment);
+            }
+
+            await _transactionHandler.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await _transactionHandler.RollbackAsync();
+            throw;
         }
     }
 

@@ -18,7 +18,7 @@ public static class ServicesConfiguration
         services.AddScoped<IRepository<Payment>, GenericRepository<Payment>>();
         services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
-
+        services.AddScoped<ITransactionHandler, TransactionHandler>();
 
         // Register services
         services.AddScoped<IVenueService, VenueService>();
